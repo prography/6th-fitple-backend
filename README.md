@@ -34,10 +34,9 @@ pip install -r env/development.txt
 ```
 
 5. set env
-
-1. path : env/etc/email.txt
-2. path : env/etc/db.txt
-3. path : env/etc/secret.txt
+   1. path : env/etc/email.txt
+   2. path : env/etc/db.txt
+   3. path : env/etc/secret.txt
 
 ## API
 
