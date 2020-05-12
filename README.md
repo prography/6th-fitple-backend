@@ -1,14 +1,10 @@
 # Fitple backend
 
---------
-
 **신뢰있는 팀원들과 함께하는 토이프로젝트 매칭 커뮤니티**
 
 
 
 ## Getting Started
-
--------
 
 1. git clone
 
@@ -40,15 +36,11 @@ pip install -r env/development.txt
 
 ## API
 
--------------
-
 [API문서](https://github.com/prography/6th-fitple-backend/tree/dev/docs/api)
 
 
 
 ## Authors
-
---------------
 
 [김시현](https://github.com/Sisi55)
 
@@ -57,8 +49,6 @@ pip install -r env/development.txt
 
 
 ## Commit message rule
-
---------
 
 - 기능: Feat {message}
 - 세팅: Setting {message}
