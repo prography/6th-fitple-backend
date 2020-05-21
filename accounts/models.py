@@ -102,6 +102,14 @@ class User(AbstractBaseUser, PermissionsMixin):
         send_mail(subject, message, from_email, [self.email], **kwargs)
 
 
-
-
-
+class Profile(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True,
+                                related_name='profile')
+    livingArea = models.CharField(
+        max_length=32,
+        null=True, blank=True
+    )
+    phone = models.CharField(
+        max_length=16,
+        null=True, blank=True
+    )
