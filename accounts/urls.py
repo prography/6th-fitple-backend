@@ -6,4 +6,5 @@ urlpatterns = [
     path('user/login/', views.login),
     path('user/check/', views.userCheck),
     path('user/jwt/', views.permissionTest),
+    path('profile/', views.ProfileView.as_view()),
 ]
