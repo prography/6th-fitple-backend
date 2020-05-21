@@ -24,6 +24,7 @@ admin.autodiscover()
 urlpatterns = [
     path('admin', admin.site.urls),
     path('account/', include('accounts.urls')),
+    path('teams/', include('teams.urls')),
 ]
 
 
