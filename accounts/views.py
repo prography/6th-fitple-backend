@@ -13,10 +13,10 @@ from .models import User, Profile
 def createUser(request):  # 회원가입 ?
     '''
     (req)
-    email = serializers.EmailField(required=True)
-    username = serializers.CharField(required=True)
-    password = serializers.CharField(required=True)
-    passwordCheck
+    email
+    username
+    password
+    passwordCheck -- pass
     (res)
     message
 
