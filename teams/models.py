@@ -25,5 +25,7 @@ class Team(models.Model):
     created_at = models.DateTimeField('생성시간', auto_now_add=True)
     modified_at = models.DateTimeField('수정시간', auto_now=True)
 
+    class Meta:
+        ordering = ["-created_at"]
 
 
