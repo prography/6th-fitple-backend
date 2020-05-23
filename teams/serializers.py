@@ -13,6 +13,8 @@ class TeamSerializer(serializers.ModelSerializer):
 
 
 class TeamListSerializer(serializers.ModelSerializer):
+    author = serializers.StringRelatedField()
+
     class Meta:
         model = Team
         fields = ('author', 'id', 'title', 'description', 'image')
