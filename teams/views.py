@@ -36,6 +36,7 @@ class TeamViewSet(viewsets.ModelViewSet):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
+    print("test")
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [permissions.AllowAny]
@@ -44,15 +45,15 @@ class CommentViewSet(viewsets.ModelViewSet):
         queryset = Comment.objects.filter(parent=None)
         return queryset
 
-    # def create(self, request, *args, **kwargs):
-    #     try:
-    #         serializer = self.get_serializer(data=request.data)
-    #         serializer.is_valid(raise_exception=True)
-    #         self.perform_create(serializer)
-    #         headers = self.get_success_headers(serializer.data)
-    #         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-    #     except:
-    #         return Response({"message": "Request Body Error."}, status=status.HTTP_409_CONFLICT)
+    def create(self, request, *args, **kwargs):
+        try:
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        except:
+            return Response({"message": "Request Body Error."}, status=status.HTTP_409_CONFLICT)
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
