@@ -36,7 +36,6 @@ class TeamViewSet(viewsets.ModelViewSet):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
-    print("test")
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [permissions.AllowAny]
@@ -56,4 +55,4 @@ class CommentViewSet(viewsets.ModelViewSet):
             return Response({"message": "Request Body Error."}, status=status.HTTP_409_CONFLICT)
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        serializer.save(user=self.request.user)
