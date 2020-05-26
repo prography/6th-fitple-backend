@@ -4,8 +4,9 @@ from teams import views
 
 
 router = DefaultRouter()
-router.register(r'test', views.TeamViewSet)
+router.register(r'board', views.TeamViewSet)
 router.register(r'comments', views.CommentViewSet)
+router.register(r'comment', views.CommentOnlyViewSet)
 
 urlpatterns = [
     path('', include(router.urls))

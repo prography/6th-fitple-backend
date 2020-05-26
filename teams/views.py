@@ -3,7 +3,7 @@ from rest_framework import viewsets
 from rest_framework import status
 from rest_framework import permissions
 from rest_framework.response import Response
-from .serializers import TeamSerializer, TeamListSerializer, CommentSerializer
+from .serializers import TeamSerializer, TeamListSerializer, CommentSerializer, TeamOnlyCommentSerializer
 from .models import Team, Comment
 
 
@@ -19,7 +19,6 @@ class TeamViewSet(viewsets.ModelViewSet):
         if self.action == 'list':
             return TeamListSerializer
         return self.serializer_class
-
 
     def create(self, request, *args, **kwargs):
         try:
@@ -38,11 +37,7 @@ class TeamViewSet(viewsets.ModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
-    permission_classes = [permissions.AllowAny]
-
-    def get_queryset(self):
-        queryset = Comment.objects.filter(parent=None)
-        return queryset
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def create(self, request, *args, **kwargs):
         try:
@@ -56,3 +51,9 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+
+class CommentOnlyViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Team.objects.all()
+    serializer_class = TeamOnlyCommentSerializer
+    permission_classes = [permissions.AllowAny]

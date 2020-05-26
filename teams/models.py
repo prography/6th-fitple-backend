@@ -30,8 +30,8 @@ class Team(models.Model):
 
 
 class Comment(models.Model):
-    team = models.ForeignKey(Team, related_name='teams', on_delete=models.CASCADE)
-    user = models.ForeignKey(User, related_name='users', on_delete=models.CASCADE)
+    team = models.ForeignKey(Team, related_name='comments', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='comments', on_delete=models.CASCADE)
     parent = models.ForeignKey('self', related_name='reply', on_delete=models.CASCADE, null=True, blank=True)
     comment = models.CharField(max_length=100)
     created_at = models.DateTimeField('생성시간', auto_now_add=True)
