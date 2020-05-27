@@ -222,7 +222,7 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers.DatabaseScheduler'
 
-if DEBUG is False:
+if DEBUG is True:
     # local s3 test
     with open(os.path.join(BASE_DIR, 'env/etc/s3.txt')) as f:
         AWS_ACCESS_KEY_ID = f.readline().strip()
