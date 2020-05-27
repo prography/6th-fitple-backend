@@ -23,14 +23,18 @@ class TeamViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         try:
             serializer = self.get_serializer(data=request.data)
+            print("error check 1")
             serializer.is_valid(raise_exception=True)
+            print("error check 2")
             self.perform_create(serializer)
+            print("error check 4")
             headers = self.get_success_headers(serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
         except:
             return Response({"message": "Request Body Error."}, status=status.HTTP_409_CONFLICT)
 
     def perform_create(self, serializer):
+        print("error check 3", self.request.user)
         serializer.save(author=self.request.user)
 
 

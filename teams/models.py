@@ -26,8 +26,8 @@ class Team(models.Model):
     people = models.CharField('사용고객', max_length=20)
     image = models.FileField('이미지',
                              upload_to=s3_test_image_upload_to,
-                             storage=PublicMediaStorage,
-                             default='https://cdn.pixabay.com/photo/2017/05/12/08/46/team-2306528_960_720.jpg')
+                             storage=PublicMediaStorage(),
+                             default='default_team.jpg') # default 실패
     created_at = models.DateTimeField('생성시간', auto_now_add=True)
     modified_at = models.DateTimeField('수정시간', auto_now=True)
 
