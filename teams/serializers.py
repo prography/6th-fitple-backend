@@ -35,12 +35,6 @@ class CommentSerializer(serializers.ModelSerializer):
         return serializer.data
 
 
-class RecursiveSerializer(CommentSerializer):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['child_comments'] = self.__class__.__base__(many=True, read_only=True)
-
-
 class TeamOnlyCommentSerializer(serializers.ModelSerializer):
     parent_comments = serializers.SerializerMethodField()
 
@@ -50,5 +44,5 @@ class TeamOnlyCommentSerializer(serializers.ModelSerializer):
 
     def get_parent_comments(self, obj):
         parent_comments = obj.comments.filter(parent=None)
-        serializer = RecursiveSerializer(parent_comments, many=True)
+        serializer = CommentSerializer(parent_comments, many=True)
         return serializer.data
