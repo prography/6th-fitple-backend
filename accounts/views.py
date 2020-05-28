@@ -3,9 +3,9 @@ from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework_jwt.utils import jwt_decode_handler
 from .serializers import UserCreateSerializer, UserLoginSerializer, ProfilePageSerializer
 from .models import User, Profile
+from config.settings.base import MEDIA_URL
 
 
 @api_view(['POST'])
@@ -86,18 +86,6 @@ def userCheck(request):
         return Response({"message": "login"}, status=status.HTTP_200_OK)
 
 
-## permission 및 jwt 테스트
-@api_view(['GET'])
-def permissionTest(request):
-    if request.method == 'GET':
-        print(request.headers['Authorization'])
-        authorization = request.headers['Authorization']
-        authorization = authorization.replace("Bearer ", "")
-        decoded_payload = jwt_decode_handler(authorization)
-
-        return Response(decoded_payload)
-
-
 class ProfileView(RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated]
     # profile -- read/update 가 달랐던가 ? 예를 들어, 이메일을 수정 안하려면 다르겠지 !
@@ -122,13 +110,17 @@ class ProfileView(RetrieveUpdateAPIView):
 
         # print('뷰 함수')
         user = request.user
+
         profile = Profile.objects.get(user=user)
+        image = MEDIA_URL + str(profile.image.open())
+
         response = {
             'success': 'True',
             'username': user.username,
             'livingArea': profile.livingArea,
             'phone': profile.phone,
-            'email': user.email
+            'email': user.email,
+            'image': image
         }
         return Response(response, status=status.HTTP_200_OK)
 
