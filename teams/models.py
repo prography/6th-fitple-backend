@@ -19,7 +19,9 @@ class Team(models.Model):
     # tags = models.ManyToManyField(Tag, related_name='teams', verbose_name='태그', blank=True)
     description = models.TextField('설명')
     status = models.CharField('상태', max_length=20)
-    personnel = models.PositiveIntegerField('최대 인원')
+    planner = models.PositiveIntegerField('기획자', default=0)
+    developer = models.PositiveIntegerField('개발자', default=0)
+    designer = models.PositiveIntegerField('디자이너', default=0)
     region = models.CharField('지역', max_length=20)
     goal = models.CharField('목표', max_length=10)
     kind = models.CharField('종류', max_length=40)
@@ -27,7 +29,7 @@ class Team(models.Model):
     image = models.FileField('이미지',
                              upload_to=s3_test_image_upload_to,
                              storage=PublicMediaStorage(),
-                             default='default_team.jpg') # default 실패
+                             default='default_team.jpg')
     created_at = models.DateTimeField('생성시간', auto_now_add=True)
     modified_at = models.DateTimeField('수정시간', auto_now=True)
 
