@@ -1,13 +1,11 @@
-import pytz
 from django.conf import settings
 from django.db import models
 from django.core.mail import send_mail
-from django.core.validators import RegexValidator
-from django.urls import reverse
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
-from django_extensions.db.models import TimeStampedModel
+from config.storage_backends import PublicMediaStorage
+from config.utils import s3_test_image_upload_to
 
 
 class UserManager(BaseUserManager):
@@ -86,7 +84,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name_plural = _('users')
 
     def __str__(self):
-        return self.email
+        return self.username
 
     def get_short_name(self):
         return self.email
@@ -102,6 +100,19 @@ class User(AbstractBaseUser, PermissionsMixin):
         send_mail(subject, message, from_email, [self.email], **kwargs)
 
 
-
-
+class Profile(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True,
+                                related_name='profile')
+    livingArea = models.CharField(
+        max_length=32,
+        null=True, blank=True
+    )
+    phone = models.CharField(
+        max_length=16,
+        null=True, blank=True
+    )
+    image = models.FileField('이미지',
+                             upload_to=s3_test_image_upload_to,
+                             storage=PublicMediaStorage(),
+                             default='default_user.png')
 

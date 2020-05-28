@@ -16,7 +16,6 @@ from datetime import timedelta
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
@@ -27,8 +26,7 @@ with open(os.path.join(BASE_DIR, 'env/etc/secret.txt')) as f:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -44,6 +42,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_extensions',
     'accounts',
+    'teams',
 ]
 
 MIDDLEWARE = [
@@ -59,9 +58,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'config.urls'
 
-
 WSGI_APPLICATION = 'config.wsgi.application'
-
 
 ##################
 # Authentication #
@@ -69,14 +66,11 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 LOGIN_URL = '/accounts/login'
 
-
 LOGIN_REDIRECT_URL = '/'
 
 LOGOUT_REDIRECT_URL = '/'
 
 AUTH_USER_MODEL = 'accounts.User'
-
-
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
@@ -96,7 +90,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
@@ -110,11 +103,13 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # DRF (django restframework) settings
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'config.settings.authentication.JSONWebTokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
@@ -148,11 +143,10 @@ STATICFILES_DIRS = [
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-
 # Media files (user upload)
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# MEDIA_URL = '/media/'
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 # for fixture (initial data)
@@ -160,14 +154,11 @@ FIXTURE_DIRS = [
     os.path.join(BASE_DIR, 'config/fixtures'),
 ]
 
-
 # message framework
 from django.contrib.messages import constants
 
 MESSAGE_LEVEL = constants.DEBUG  # leave debug-level message
 MESSAGE_TAGS = {constants.ERROR: 'danger'}
-
-
 
 # Sending Email
 EMAIL_HOST = 'smtp.gmail.com'
@@ -178,9 +169,8 @@ EMAIL_PORT = 587
 CORS_ORIGIN_WHITELIST = (
     'http://localhost:3000',
 )
-CORS_ORIGIN_REGEX_WHITELIST = (r'^(https?://)?(\w+\.)?url\.com$', )
+CORS_ORIGIN_REGEX_WHITELIST = (r'^(https?://)?(\w+\.)?url\.com$',)
 CORS_ALLOW_CREDENTIALS = True
-
 
 # django-extenstions graph models + pyparsing + pydot
 GRAPH_MODELS = {
@@ -188,24 +178,22 @@ GRAPH_MODELS = {
     'group_models': True,
 }
 
-
-
 # djangorestframework-jwt
 JWT_AUTH = {
     'JWT_ENCODE_HANDLER':
-    'rest_framework_jwt.utils.jwt_encode_handler',
+        'rest_framework_jwt.utils.jwt_encode_handler',
 
     'JWT_DECODE_HANDLER':
-    'rest_framework_jwt.utils.jwt_decode_handler',
+        'rest_framework_jwt.utils.jwt_decode_handler',
 
     'JWT_PAYLOAD_HANDLER':
-    'rest_framework_jwt.utils.jwt_payload_handler',
+        'rest_framework_jwt.utils.jwt_payload_handler',
 
     'JWT_PAYLOAD_GET_USER_ID_HANDLER':
-    'rest_framework_jwt.utils.jwt_get_user_id_from_payload_handler',
+        'rest_framework_jwt.utils.jwt_get_user_id_from_payload_handler',
 
     'JWT_RESPONSE_PAYLOAD_HANDLER':
-    'rest_framework_jwt.utils.jwt_response_payload_handler',
+        'rest_framework_jwt.utils.jwt_response_payload_handler',
 
     'JWT_SECRET_KEY': 'SECRET_KEY',
     'JWT_GET_USER_SECRET_KEY': None,
@@ -234,3 +222,25 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers.DatabaseScheduler'
 
+if DEBUG is True:
+    # local s3 test
+    with open(os.path.join(BASE_DIR, 'env/etc/s3.txt')) as f:
+        AWS_ACCESS_KEY_ID = f.readline().strip()
+        AWS_SECRET_ACCESS_KEY = f.readline().strip()
+        AWS_REGION = f.readline().strip()
+        AWS_STORAGE_BUCKET_NAME = f.readline().strip()
+
+        AWS_S3_CUSTOM_DOMAIN = '%s.s3-%s.amazonaws.com' % (AWS_STORAGE_BUCKET_NAME, AWS_REGION)
+        AWS_S3_OBJECT_PARAMETERS = {
+            'CacheControl': 'max-age=86400',
+        }
+
+        AWS_DEFAULT_ACL = 'public-read'
+        # AWS_LOCATION = 'static' # 일단 media - image 부분만!
+        AWS_MEDIA_LOCATION = 'media'
+
+        # STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
+        MEDIA_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_MEDIA_LOCATION)
+
+        # STATICFILES_STORAGE = ''
+        DEFAULT_FILE_STORAGE = 'config.storage_backends.PublicMediaStorage'
