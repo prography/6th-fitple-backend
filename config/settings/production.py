@@ -1,12 +1,12 @@
 from .base import *
-
+import os
 
 
 # For the deployment checklist automatically, you should use a command 'python manage.py check --deploy'
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['.myUrl.com']
+ALLOWED_HOSTS = ['*']
 
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
@@ -60,47 +60,43 @@ SERVER_EMAIL = 'paikend@gmail.com'
 INSTALLED_APPS += ['storages',]
 
 # Administrator1
-AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+# AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+# AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+#
+# AWS_STORAGE_BUCKET_NAME = 's3-name'
+# AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+#
+# AWS_S3_OBJECT_PARAMETERS = {
+#     'CacheControl': 'max-age=86400',
+# }
+#
+# AWS_PUBLIC_MEDIA_LOCATION = 'media/public'
+# DEFAULT_FILE_STORAGE = 'config.storage_backends.PrivateMediaStorage'
+#
+# AWS_PRIVATE_MEDIA_LOCATION = 'media/private'
+# PRIVATE_FILE_STORAGE = 'config.storage_backends.PrivateMediaStorage'
+#
+# AWS_S3_REGION_NAME = 'ap-northeast-2'
+# AWS_S3_SIGNATURE_VERSION = 's3v4'
+# AWS_DEFAULT_ACL = None
 
-AWS_STORAGE_BUCKET_NAME = 's3-name'
-AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+with open(os.path.join(BASE_DIR, 'env/etc/s3.txt')) as f:
+    AWS_ACCESS_KEY_ID = f.readline().strip()
+    AWS_SECRET_ACCESS_KEY = f.readline().strip()
+    AWS_REGION = f.readline().strip()
+    AWS_STORAGE_BUCKET_NAME = f.readline().strip()
 
-AWS_S3_OBJECT_PARAMETERS = {
-    'CacheControl': 'max-age=86400',
-}
+    AWS_S3_CUSTOM_DOMAIN = '%s.s3-%s.amazonaws.com' % (AWS_STORAGE_BUCKET_NAME, AWS_REGION)
+    AWS_S3_OBJECT_PARAMETERS = {
+        'CacheControl': 'max-age=86400',
+    }
 
-AWS_PUBLIC_MEDIA_LOCATION = 'media/public'
-DEFAULT_FILE_STORAGE = 'config.storage_backends.PrivateMediaStorage'
+    AWS_DEFAULT_ACL = 'public-read'
+    # AWS_LOCATION = 'static' # 일단 media - image 부분만!
+    AWS_MEDIA_LOCATION = 'media'
 
-AWS_PRIVATE_MEDIA_LOCATION = 'media/private'
-PRIVATE_FILE_STORAGE = 'config.storage_backends.PrivateMediaStorage'
+    # STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
+    MEDIA_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_MEDIA_LOCATION)
 
-AWS_S3_REGION_NAME = 'ap-northeast-2'
-AWS_S3_SIGNATURE_VERSION = 's3v4'
-AWS_DEFAULT_ACL = None
-
-# CSRF_TOKEN
-CSRF_COOKIE_DOMAIN = 'myurl'
-CSRF_TRUSTED_ORIGINS = ['.myurl']
-
-
-# for reverse proxy in front of django
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-
-# sentry (error logging) sdk
-import sentry_sdk
-from sentry_sdk.integrations.django import DjangoIntegration
-
-def only_prod(event, hint):
-    if os.environ['DJANGO_SETTINGS_MODULE'] == 'config.settings.production':
-        return event
-    else:
-        return None
-
-sentry_sdk.init(
-    dsn='sentryurl',
-    integrations=[DjangoIntegration()],
-    send_default_pii=True,
-    before_send=only_prod,
-)
+    # STATICFILES_STORAGE = ''
+    DEFAULT_FILE_STORAGE = 'config.storage_backends.PublicMediaStorage'

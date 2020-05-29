@@ -42,4 +42,8 @@ schema/
 django_py38
 
 ## env
-env
+enc
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
