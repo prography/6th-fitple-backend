@@ -26,8 +26,8 @@ with open('env/etc/db.txt') as db_info:
 # redirect URL
     REDIRECT_URL = 'https://myUrl.com'
 # email setting
-    EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
-    EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
+#     EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
+#     EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
 
 # HTTPS for the security
 # make ensure the browser to use HTTPS instead of HTTP for the cookie
@@ -70,7 +70,7 @@ INSTALLED_APPS += ['storages',]
 #     'CacheControl': 'max-age=86400',
 # }
 #
-# AWS_PUBLIC_MEDIA_LOCATION = 'media/public'
+
 # DEFAULT_FILE_STORAGE = 'config.storage_backends.PrivateMediaStorage'
 #
 # AWS_PRIVATE_MEDIA_LOCATION = 'media/private'
@@ -90,6 +90,8 @@ with open(os.path.join(BASE_DIR, 'env/etc/s3.txt')) as f:
     AWS_S3_OBJECT_PARAMETERS = {
         'CacheControl': 'max-age=86400',
     }
+    AWS_PUBLIC_MEDIA_LOCATION = 'media/public'
+    AWS_PRIVATE_MEDIA_LOCATION = 'media/private'
 
     AWS_DEFAULT_ACL = 'public-read'
     # AWS_LOCATION = 'static' # 일단 media - image 부분만!
