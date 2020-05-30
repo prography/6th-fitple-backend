@@ -11,15 +11,15 @@ ALLOWED_HOSTS = ['*']
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
-if os.environ.get('DJANGO_SETTINGS_MODULE') == 'config.settings.production':
+with open('env/etc/db.txt') as db_info:
     DATABASES = {
         'default': {
-            'ENGINE': os.environ['RDS_DB_ENGINE'],
-            'NAME': os.environ['RDS_DB_NAME'],
-            'USER': os.environ['RDS_USERNAME'],
-            'PASSWORD': os.environ['RDS_PASSWORD'],
-            'HOST': os.environ['RDS_HOSTNAME'],
-            'PORT': os.environ['RDS_PORT'],
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': db_info.readline().strip(),
+            'USER': db_info.readline().strip(),
+            'PASSWORD': db_info.readline().strip(),
+            'HOST': db_info.readline().strip(),
+            'PORT': db_info.readline().strip(),
             'ATOMIC_REQUESTS': True,
         }
     }
