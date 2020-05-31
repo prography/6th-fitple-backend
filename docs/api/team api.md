@@ -20,7 +20,7 @@
 
 - 요청 URL
 
-  - Test URL: http://127.0.0.1:8000/teams/
+  - Test URL: http://fitple-last-dev.ap-northeast-2.elasticbeanstalk.com/teams/board/
   - 서비스 URL: 추후 추가 
 
 - HTTP 메서드: POST
@@ -40,7 +40,9 @@
       "title": "",
       "description": "",
       "status": "",
-      "personnel": ,
+      "planner": ${number},
+      "developer": ${number},
+      "designer": ${number},
       "region": "",
       "goal": "",
       "kind": "",
@@ -58,7 +60,9 @@
 | title       | string | 제목                 |
 | description | string | 설명                 |
 | status      | string | 상태                 |
-| personnel   | number | 최대 인원            |
+| planner     | number | 기획자 인원          |
+| developer   | number | 개발자 인원          |
+| designer    | number | 디자이너 인원        |
 | region      | string | 지역                 |
 | goal        | string | 목표                 |
 | kind        | string | 종류 ex) 웹, 앱      |
@@ -72,7 +76,7 @@
 - 요청 URL 
 
   ``` 
-  http://127.0.0.1:8000/teams/
+  http://fitple-last-dev.ap-northeast-2.elasticbeanstalk.com/teams/board/
   ```
 
 - 요청 Body
@@ -82,7 +86,9 @@
       "title": "test1",
       "description": "testtest",
       "status": "delay",
-      "personnel": 4,
+      "planner": 1,
+      "developer": 1,
+      "designer": 1,
       "region": "서",
       "goal": "test",
       "kind": "웹",
@@ -107,7 +113,9 @@
       "title": "test1",
       "description": "testtest",
       "status": "delay",
-      "personnel": 4,
+      "planner": 1,
+      "developer": 1,
+      "designer": 1,
       "region": "서",
       "goal": "test",
       "kind": "웹",
@@ -138,7 +146,7 @@
 
 - 요청 URL
 
-  - Test URL: http://127.0.0.1:8000/teams/
+  - Test URL: http://fitple-last-dev.ap-northeast-2.elasticbeanstalk.com/teams/board/
   - 서비스 URL: 추후 추가
 
 - HTTP 메서드: GET
@@ -162,7 +170,7 @@
 -  요청 URL
 
 ```
-http://127.0.0.1:8000/teams/
+http://fitple-last-dev.ap-northeast-2.elasticbeanstalk.com/teams/board/
 ```
 
 - 응답
@@ -218,7 +226,7 @@ http://127.0.0.1:8000/teams/
 
 - 요청 URL
 
-  - Test URL: http://127.0.0.1:8000/teams/:id/
+  - Test URL: http://fitple-last-dev.ap-northeast-2.elasticbeanstalk.com/teams/board/:id/
   - 서비스 URL: 추후 추가
 
 - HTTP 메서드: GET
@@ -232,7 +240,9 @@ http://127.0.0.1:8000/teams/
   | title       | string | 제목                 |
   | description | string | 설명                 |
   | status      | string | 상태                 |
-  | personnel   | number | 최대 인원            |
+  | planner     | number | 기획자 인원          |
+  | developer   | number | 개발자 인원          |
+  | designer    | number | 디자이너 인원        |
   | region      | string | 지역                 |
   | goal        | string | 목표                 |
   | kind        | string | 종류 ex) 웹, 앱      |
@@ -246,29 +256,31 @@ http://127.0.0.1:8000/teams/
 - 요청 URL
 
   ``` 
-  http://localhost:8000/teams/18/
+  http://fitple-last-dev.ap-northeast-2.elasticbeanstalk.com/teams/18/
   ```
 
 - 응답
 
   ``` json
   {
-      "author": "dobby1@naver.com",
-      "id": 18,
-      "title": "test1",
-      "description": "testtest",
+      "author": "dobby1",
+      "id": 1,
+      "title": "Fitple 프로젝트 완성",
+      "description": "Fitple test",
       "status": "delay",
-      "personnel": 4,
-      "region": "서",
+      "planner": 1,
+      "developer": 1,
+      "designer": 1,
+      "region": "서울",
       "goal": "test",
       "kind": "웹",
       "people": "test",
-      "image": "http://localhost:8000/media/default.jpg",
-      "created_at": "2020-05-23T14:08:44.818011+09:00",
-      "modified_at": "2020-05-23T14:08:44.818051+09:00"
-  }
+      "image": "https://fitple-access-s3-test.s3-ap-northeast-2.amazonaws.com/media/public/default_team.jpg",
+      "created_at": "2020-05-31T19:34:50.519963+09:00",
+      "modified_at": "2020-05-31T19:34:50.519990+09:00"
+}
   ```
-
+  
   
 
 -------
