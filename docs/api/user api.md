@@ -9,6 +9,8 @@
 
 
 
+**임시 BaseUrl: http://fitple-last-dev.ap-northeast-2.elasticbeanstalk.com**
+
 ---
 
 
@@ -93,14 +95,20 @@
   - email 이미 있으면
 
   - ```json
-    {"message": "login"}
+    {
+      "message": "login",
+      "email": email
+}
     // 다음 순서는 로그인
-    ```
-
+  ```
+    
   - 없는 email 이면
-
+  
   - ```json
-    {"message": "register"}
+    {
+      "message": "register",
+    	"email": email
+    }
     // 다음 순서는 회원가입
     ```
 
@@ -133,6 +141,7 @@
     livingArea
     phone
     email
+    ```
   ```
   
   - ###### response
@@ -141,7 +150,7 @@
   
   - ```json
     {"message": "Request Body Error."}
-    ```
+  ```
   
   - 성공하면
   
