@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from .serializers import UserCreateSerializer, UserLoginSerializer, ProfilePageSerializer
 from .models import User, Profile
-from config.settings.base import MEDIA_URL
+from config.settings.production import MEDIA_URL
 
 
 @api_view(['POST'])
@@ -59,6 +59,8 @@ def login(request):
 
         if not serializer.is_valid(raise_exception=True):
             return Response({"message": "Request Body Error."}, status=status.HTTP_409_CONFLICT)
+        if serializer.validated_data['email'] == "None":
+            return Response({'message': 'fail'}, status=status.HTTP_200_OK)
         # query = User.objects.filter(email=serializer.validated_data['email']).first()
         query = User.objects.filter(email=serializer.validated_data['email']).values()[0]
         # print(query)
@@ -82,8 +84,14 @@ def userCheck(request):
         email = request.data['email']
 
         if User.objects.filter(email=email).first() is None:
-            return Response({"message": "register"}, status=status.HTTP_200_OK)
-        return Response({"message": "login"}, status=status.HTTP_200_OK)
+            return Response({
+                "message": "register",
+                "email": email
+            }, status=status.HTTP_200_OK)
+        return Response({
+            "message": "login",
+            "email": email
+            }, status=status.HTTP_200_OK)
 
 
 class ProfileView(RetrieveUpdateAPIView):
@@ -110,9 +118,10 @@ class ProfileView(RetrieveUpdateAPIView):
 
         # print('뷰 함수')
         user = request.user
-
         profile = Profile.objects.get(user=user)
-        image = MEDIA_URL + str(profile.image.open())
+
+        # image eb에 올라가서 open() 할때 에러가 나는 듯
+        # image = MEDIA_URL + str(profile.image.open())
 
         response = {
             'success': 'True',
@@ -120,7 +129,7 @@ class ProfileView(RetrieveUpdateAPIView):
             'livingArea': profile.livingArea,
             'phone': profile.phone,
             'email': user.email,
-            'image': image
+            'image': "image url"
         }
         return Response(response, status=status.HTTP_200_OK)
 
