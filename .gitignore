@@ -40,6 +40,7 @@ schema/
 
 ## virtual env
 django_py38
+django_py36
 
 ## env
 env
