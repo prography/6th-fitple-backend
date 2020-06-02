@@ -115,7 +115,7 @@ class TeamViewSet(viewsets.ModelViewSet):
                 return Response({"message": "No results."}, status=status.HTTP_200_OK)
 
             permission = IsTeamLeader().has_object_permission(self.request, self, application.team)
-            if  permission is False:
+            if permission is False:
                 # 팀 객체 퍼미션 확인하기 -- 팀 리더가 요청했을 때만 신청 list 반환하려고
                 # message =
                 # PermissionDenied
@@ -126,7 +126,7 @@ class TeamViewSet(viewsets.ModelViewSet):
             team_serializer = TeamSerializer(instance=application.team)
 
             response = {
-                'team': team_serializer.data,
+                'team': team_serializer.data['id'],
                 'applications': serializer.data
             }
             return Response(response, status=status.HTTP_200_OK)
