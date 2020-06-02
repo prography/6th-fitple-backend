@@ -108,7 +108,7 @@ class TeamViewSet(viewsets.ModelViewSet):
             )
 
             application = queryset.first()
-            if application is None:
+            if application is None:  # -- 퍼미션 검사하면서 None 객체에 접근하는 참사를 막기 위해 ?
                 return Response({"message": "No results."}, status=status.HTTP_200_OK)
 
             permission = IsTeamLeader().has_object_permission(self.request, self, application.team)
@@ -116,7 +116,6 @@ class TeamViewSet(viewsets.ModelViewSet):
                 # 팀 객체 퍼미션 확인하기 -- 팀 리더가 요청했을 때만 신청 list 반환하려고
                 return Response({"message": "Request Permission Error."}, status=status.HTTP_403_FORBIDDEN)
 
-            # 쿼리 결과 없으면 그냥 보내기
             serializer = TeamApplicationSerializer(instance=queryset, many=True)
             team_serializer = TeamSerializer(instance=application.team)
 
@@ -144,7 +143,7 @@ class TeamViewSet(viewsets.ModelViewSet):
             except:
                 return Response({"message": "Not Found."}, status=status.HTTP_404_NOT_FOUND)
 
-            # 인증된 사용자라도 자기자신이 아닐 수 있다 -- 이거 테스트하고, permission_classses 정보 테스트하기
+            # 인증된 사용자라도 자기자신이 아닐 수 있다 -- permission 확인
             permission = IsOwner().has_object_permission(self.request, self, application)
             if application is not None and permission is False:
                 return Response({"message": "Request Permission Error."}, status=status.HTTP_403_FORBIDDEN)
