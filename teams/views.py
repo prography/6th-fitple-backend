@@ -2,7 +2,13 @@ from django.shortcuts import render
 from rest_framework import viewsets
 from rest_framework import status
 from rest_framework import permissions
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+
+from applications.models import TeamApplication
+from applications.permissions import IsTeamLeader, IsOwner
+from applications.serializers import TeamApplicationSerializer
 from .serializers import TeamSerializer, TeamListSerializer, CommentSerializer, TeamOnlyCommentSerializer
 from .models import Team, Comment
 
@@ -21,7 +27,10 @@ class TeamViewSet(viewsets.ModelViewSet):
         return self.serializer_class
 
     def create(self, request, *args, **kwargs):
+        # debug ok
         try:
+            print("sisi")
+            print(request.data)
             serializer = self.get_serializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             self.perform_create(serializer)
@@ -32,6 +41,190 @@ class TeamViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
+    ## ADD ###
+
+    # 일단 다 가져오고 각각 커스텀 할 부분 생각하기
+    @action(methods=['post', 'get'], detail=True,
+            url_path='applications', url_name='about_applications',
+            permission_classes=[IsAuthenticated])
+    def create_and_list_application(self, request, *args, **kwargs):  # 인증된 사용자
+        if request.method == 'POST':
+            '''
+            header - token :: 지원자 정보
+            url : POST  teams/{detail}/applications
+            (req)
+            # team : 어떻게 구분할 생각? -- 일단 team id
+            applicant   job
+            (res)
+            # 신청자, 팀, ok :: {신청자 username} 가 {팀 title} 에 지원함.
+            '''
+            # print(request.user.email)
+            # 나는 해당 팀 신청 list 에서 email list 를 만들고 싶어 -- 사실 email 이 아니라 id 로 해도 마찬가지로 동작한다!
+            # 그리고 동일한 팀에 직무 다르게 지원하는 것도 괜찮다면 로직 수정이 있어야 한다!
+            applications = TeamApplication.objects.filter(team__id=kwargs['pk'])
+            applicants_email = [apc.applicant.email for apc in applications]
+            # print(applicants_email)
+            if request.user.email in applicants_email:
+                return Response({"message": "Duplicated applicant's email."}, status=status.HTTP_400_BAD_REQUEST)
+            # if request.user.email
+            serializer = TeamApplicationSerializer(data=request.data)
+            # team 은 kwargs 에서 구분하고
+            # 작성자는 request.user
+            # 당장은 직무만 선택하는 로직 작성하자! -- 다른건 동작 확인하고 계획하자! -- 다른거래봤자 질문인데 3개만 제한해서 작성하기로 하자 -- 3개이하
+            serializer.is_valid(raise_exception=True)  # serializer 여기 한 번 제대로 살펴봐야겠다 ..
+            team = Team.objects.get(pk=kwargs['pk'])
+            # 신청한 직무에 대해 초과 인원 뺄 필요가 당장은 없겠다 -- 의식의흐름... 일단 다 신청받기
+            serializer.save(team=team, applicant=request.user)  # TODO team 잘 주입되는지 확인하기! oo
+
+            response = {
+                "message": f"'{self.request.user.username}' applies to Team: '{team.title}'"
+            }
+            headers = self.get_success_headers(serializer.data)
+            return Response(response, status=status.HTTP_201_CREATED, headers=headers)
+
+        elif request.method == 'GET':
+            '''
+            이 api 는 팀 리더가 마이페이지에서
+            팀 리더가 생성한 Team list 를 먼저 보고
+            하나를 선택해서 해당 팀 내의 신청 list 를 받는 api
+            (req)
+            url : GET  teams/{detail}/applications 라고 생각했는데
+            동원오빠 url 에 맞춰서 작성하자
+            
+            근데 현재 작성한 api 는 쿼리 날리고 퍼미션을 검사하기 때문에
+            퍼미션을 먼저 검사할 방법 생각해봐야한다! 일단은 동작하게 해놨지만...
+            '''
+            # IsTeamLeader : object level permission 잘 동작하는지 확인해보기 -- post랑 같이 개별 퍼미션 적용할 수 있을리가...
+            # 또 직접 작성해서 확인해보기
+
+            # get_queryset 커스텀 해야할까...
+            # 해당 팀에 관련된 신청 정보만 전달 !
+            # 지원자가 취소한 데이터는 보여주지 말것
+
+            queryset = TeamApplication.objects.filter(  # 해당 팀의 신청 정보를 먼저 가져오고
+                team__id=kwargs['pk']
+            ).exclude(  # 지원자가 취소한 신청 정보 필터링하기
+                join_status=TeamApplication.CANCELED
+            )
+            # 잘 동작하는지 확인하기! oo
+            # print(queryset)
+
+            application = queryset.first()
+            if application is None:
+                return Response({"message": "No results."}, status=status.HTTP_200_OK)
+
+            permission = IsTeamLeader().has_object_permission(self.request, self, application.team)
+            if  permission is False:
+                # 팀 객체 퍼미션 확인하기 -- 팀 리더가 요청했을 때만 신청 list 반환하려고
+                # message =
+                # PermissionDenied
+                return Response({"message": "Request Permission Error."}, status=status.HTTP_403_FORBIDDEN)
+
+            # 쿼리 결과 없으면 그냥 보내기
+            serializer = TeamApplicationSerializer(instance=queryset, many=True)
+            team_serializer = TeamSerializer(instance=application.team)
+
+            response = {
+                'team': team_serializer.data,
+                'applications': serializer.data
+            }
+            return Response(response, status=status.HTTP_200_OK)
+
+        return Response({"message": "method not allowed."}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    # @action(methods=['get'], detail=True, url_path='applications', url_name='list_applications',
+    #         permission_classes=[IsAuthenticated])  #IsTeamLeader
+    # def list_applications(self, request, *args, **kwargs):  # 팀 리더 - @action :: permission 부분 커스텀!
+
+    @action(methods=['get', 'put', 'delete'], detail=True, url_path='applications/(?P<application_id>\d+)',
+            url_name='detail_applications', permission_classes=[IsOwner])
+    def retrieve_update_cancel_application(self, request, *args, **kwargs):  # 인증된 사용자
+        if request.method == 'GET':
+            '''
+            url : GET  teams/{detail:팀id}/applications/{detail:신청id}
+            '''
+            # update 위해 화면에 뿌려줄 기존 데이터
+
+            # 해당 팀에 대해 작성한 내 기존 데이터 불러오기
+            # 이게 되려면 create 할 때 중복이 없어야 한다! TODO
+            # request.user.email
+            # print(kwargs)
+            try:
+                application = TeamApplication.objects.get(pk=kwargs['application_id'])
+            except:
+                return Response({"message": "Not Found."}, status=status.HTTP_404_NOT_FOUND)
+            # 인증된 사용자라도 자기자신이 아닐 수 있다 -- 이거 테스트하고, permission_classses 정보 테스트하기
+            # permission = IsOwner().has_object_permission(self.request, self, application)
+            # if application is not None and permission is False:
+            #     return Response({"message": "Request Permission Error."}, status=status.HTTP_403_FORBIDDEN)
+
+            # 아니다 이것도 위처럼 객체 레벨 퍼미션 지정해야하는구나..
+            # if application.applicant.email != request.user.email:
+            #     return Response({"message": "Request Permission Error."}, status=status.HTTP_403_FORBIDDEN)
+
+            # if application is not None:
+            #     print(dict(application))  # TypeError: 'TeamApplication' object is not iterable
+            # return
+            serializer = TeamApplicationSerializer(instance=application)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        elif request.method == 'PUT':
+            '''
+            url : PUT  teams/{detail}/applications/{detail}
+            '''
+            # 신청 정보 수정
+            # 대기중 일 때만 가능해야겠지
+            # 퍼미션 먼저 확인 -- 객체 찾고 가능
+
+            # 객체 존재 확인
+            try:
+                application = TeamApplication.objects.get(pk=kwargs['application_id'])
+            except:
+                return Response({"message": "Not Found."}, status=status.HTTP_404_NOT_FOUND)
+
+            # permission = IsOwner().has_object_permission(self.request, self, application)
+            # if permission is False:
+            #     return Response({"message": "Request Permission Error."}, status=status.HTTP_403_FORBIDDEN)
+
+
+            # 상태가 대기중일 때만 수정 가능
+            if application.join_status != TeamApplication.WAITING:
+                return Response({"message": "Bad Request."}, status=status.HTTP_400_BAD_REQUEST)
+
+            serializer = TeamApplicationSerializer(instance=application, data=self.request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save() # update() 호출
+
+            # 상세 반환 메시지 생각! ok
+            return Response({"message": "ok"}, status=status.HTTP_200_OK)
+
+        elif request.method == 'DELETE':
+            '''
+            url : DELETE  teams/{detail}/applications/{detail}
+            '''
+            try:
+                application = TeamApplication.objects.get(pk=kwargs['application_id'])
+            except:
+                return Response({"message": "Not Found."}, status=status.HTTP_404_NOT_FOUND)
+
+            # 실제로 삭제하지말고 취소상태로 바꾸기
+            application.join_status = TeamApplication.CANCELED
+            application.save()
+
+            return Response({"message": "ok"}, status=status.HTTP_200_OK)
+
+        return Response({"message": "method not allowed."}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    # @action(methods=['put'], detail=True, url_path='applications/(?P<application_id>\d+)',
+    #         url_name='update_application', permission_classes=[IsAuthenticated])
+    # def update_application(self, request, *args, **kwargs):  # 인증된 사용자
+    #     pass
+    #
+    # @action(methods=['delete'], detail=True, url_path='applications/(?P<application_id>\d+)',
+    #         url_name='cancel_application', permission_classes=[IsAuthenticated])
+    # def cancel_application(self, request, *args, **kwargs):  # 인증된 사용자
+    #     pass
 
 
 class CommentViewSet(viewsets.ModelViewSet):

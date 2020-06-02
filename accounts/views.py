@@ -110,6 +110,7 @@ class ProfileView(RetrieveUpdateAPIView):
         livingArea
         phone
         email
+        image !!!
         :param request:
         :param args:
         :param kwargs:
@@ -157,5 +158,8 @@ class ProfileView(RetrieveUpdateAPIView):
         serializer.save()  # User, Profile 변경
 
         # 잘 변경됐으면 return OK -- update OK 상태코드는 뭘까 ? 200 인듯
-        return Response({"message": "ok."}, status=status.HTTP_200_OK) #
+        return Response({"message": "ok."}, status=status.HTTP_200_OK)  #
         # 아니면 return Fail
+
+
+# User + Profile : 합쳐 전달하는 get api 필요할까 ?

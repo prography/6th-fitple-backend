@@ -22,21 +22,21 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = [
-    path('admin', admin.site.urls),
+    path('admin/', admin.site.urls),
     path('account/', include('accounts.urls')),
     path('teams/', include('teams.urls')),
+    path('applications/', include('applications.urls')),
 ]
-
-
 
 # 개발서버에서 미디어 파일 서빙
 # urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 #
-# if settings.DEBUG:
-#     import debug_toolbar
-#     urlpatterns += [
-#         url(r'^__debug__/', include(debug_toolbar.urls)),
-#     ]
+if settings.DEBUG:
+    import debug_toolbar
+
+    urlpatterns += [
+        url(r'^__debug__/', include(debug_toolbar.urls)),
+    ]
 #
 #     # for drf-yasg
 #     from rest_framework import permissions
