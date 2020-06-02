@@ -18,3 +18,8 @@ class IsOwner(BasePermission):
         # ?? 뷰에서 팀 리더인지 어떻게 알지 ?
         # api 요청한 사용자의 이메일이 팀 리더의 이메일과 같다면 True 반환 해서 확인하려고 했지!
         return request.user.email == obj.applicant.email
+
+
+class IsApplicationTeamLeader(BasePermission):
+    def has_object_permission(self, request, view, obj): # TeamApplication
+        return request.user.email == obj.team.author.email
