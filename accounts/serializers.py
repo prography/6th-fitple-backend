@@ -41,9 +41,9 @@ class UserLoginSerializer(serializers.Serializer):
         user = authenticate(email=email, password=password)
 
         if user is None:
-            raise serializers.ValidationError(
-                'A user with this email and password is not found.'
-            )
+            return {
+                'email': 'None'
+            }
         try:
             payload = JWT_PAYLOAD_HANDLER(user)
             jwt_token = JWT_ENCODE_HANDLER(payload)
