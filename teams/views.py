@@ -13,6 +13,7 @@ from .serializers import TeamSerializer, TeamListSerializer, CommentSerializer, 
 from .models import Team, Comment
 
 
+
 # Create your views here.
 
 
@@ -38,6 +39,23 @@ class TeamViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
         except:
             return Response({"message": "Request Body Error."}, status=status.HTTP_409_CONFLICT)
+
+    def retrieve(self, request, pk=None):
+        applications = TeamApplication.objects.filter(team_id=pk).values("applicant__username")
+        
+        app_list = []
+        for app in applications:
+            app_list.append(app['applicant__username'])
+        #applicants_user = [apc.applicant for apc in applications]
+
+
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response({
+            "board": serializer.data,
+            "author": serializer.data['author'],
+            "application": app_list,
+        })
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
