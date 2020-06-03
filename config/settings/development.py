@@ -20,7 +20,7 @@ INTERNAL_IPS = ['127.0.0.1']
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
-with open('env/etc/db.txt') as db_info:
+with open('env/etc/localdb.txt') as db_info:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',

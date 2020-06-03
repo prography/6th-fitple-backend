@@ -27,12 +27,15 @@ class TeamViewSet(viewsets.ModelViewSet):
             return TeamListSerializer
         return self.serializer_class
 
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
     def create(self, request, *args, **kwargs):
         # debug ok
         try:
-            print("sisi")
-            print(request.data)
+
             serializer = self.get_serializer(data=request.data)
+
             serializer.is_valid(raise_exception=True)
             self.perform_create(serializer)
             headers = self.get_success_headers(serializer.data)
@@ -57,8 +60,6 @@ class TeamViewSet(viewsets.ModelViewSet):
             "application": app_list,
         })
 
-    def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
 
     # 일단 다 가져오고 각각 커스텀 할 부분 생각하기
     @action(methods=['post', 'get'], detail=True,
