@@ -53,23 +53,26 @@
 
 - 응답: 응답에 성공하면 결과값을 JSON 형식으로 반환합니다.
 
-| 속성        | 타입   | 설명                 |
-| ----------- | ------ | -------------------- |
-| author      | string | 작성자 email         |
-| id          | number | Team 신청 PK         |
-| title       | string | 제목                 |
-| description | string | 설명                 |
-| status      | string | 상태                 |
-| planner     | number | 기획자 인원          |
-| developer   | number | 개발자 인원          |
-| designer    | number | 디자이너 인원        |
-| region      | string | 지역                 |
-| goal        | string | 목표                 |
-| kind        | string | 종류 ex) 웹, 앱      |
-| people      | string | 사용고객             |
-| image       | string | 프로젝트 이미지(url) |
-| created_at  | string | 작성시간             |
-| modified_at | string | 수정시간             |
+| 속성              | 타입   | 설명                 |
+| ----------------- | ------ | -------------------- |
+| board             | json   | 게시판 json 데이터   |
+| board.author      | string | 작성자 email         |
+| board.id          | number | Team 신청 PK         |
+| board.title       | string | 제목                 |
+| board.description | string | 설명                 |
+| board.status      | string | 상태                 |
+| board.planner     | number | 기획자 인원          |
+| board.developer   | number | 개발자 인원          |
+| board.designer    | number | 디자이너 인원        |
+| board.region      | string | 지역                 |
+| board.goal        | string | 목표                 |
+| board.kind        | string | 종류 ex) 웹, 앱      |
+| board.people      | string | 사용고객             |
+| board.image       | string | 프로젝트 이미지(url) |
+| board.created_at  | string | 작성시간             |
+| board.modified_at | string | 수정시간             |
+| author            | string | 작성자 username      |
+| application       | json   | 빈 리스트            |
 
 **응답예시**
 
@@ -108,21 +111,25 @@
 
   ``` json
   {
-      "author": "dobby1@naver.com",
-      "id": 17,
-      "title": "test1",
-      "description": "testtest",
-      "status": "delay",
-      "planner": 1,
-      "developer": 1,
-      "designer": 1,
-      "region": "서",
-      "goal": "test",
-      "kind": "웹",
-      "people": "test",
-      "image": "http://localhost:8000/media/default.jpg",
-      "created_at": "2020-05-22T13:44:18.477133+09:00",
-      "modified_at": "2020-05-22T13:44:18.477168+09:00"
+      "board": {
+        "author": "dobby1@naver.com",
+        "id": 17,
+        "title": "test1",
+        "description": "testtest",
+        "status": "delay",
+        "planner": 1,
+        "developer": 1,
+        "designer": 1,
+        "region": "서",
+        "goal": "test",
+        "kind": "웹",
+        "people": "test",
+        "image": "http://localhost:8000/media/default.jpg",
+        "created_at": "2020-05-22T13:44:18.477133+09:00",
+        "modified_at": "2020-05-22T13:44:18.477168+09:00"
+      },
+    	"author": "dobby1",
+      "application": []
   }
   ```
 
@@ -233,23 +240,26 @@ http://fitple-last-dev.ap-northeast-2.elasticbeanstalk.com/teams/board/
 
 - 응답: 응답에 성공하면 Team detail 결과 값을 Json 형식으로 반환합니다.
 
-  | 속성        | 타입   | 설명                 |
-  | ----------- | ------ | -------------------- |
-  | author      | string | 작성자 email         |
-  | id          | number | Team 신청 PK         |
-  | title       | string | 제목                 |
-  | description | string | 설명                 |
-  | status      | string | 상태                 |
-  | planner     | number | 기획자 인원          |
-  | developer   | number | 개발자 인원          |
-  | designer    | number | 디자이너 인원        |
-  | region      | string | 지역                 |
-  | goal        | string | 목표                 |
-  | kind        | string | 종류 ex) 웹, 앱      |
-  | people      | string | 사용고객             |
-  | image       | string | 프로젝트 이미지(url) |
-  | created_at  | string | 작성시간             |
-  | modified_at | string | 수정시간             |
+  | 속성              | 타입   | 설명                 |
+  | ----------------- | ------ | -------------------- |
+  | board             | json   | 게시판 데이터        |
+  | board.author      | string | 작성자 email         |
+  | board.id          | number | Team 신청 PK         |
+  | board.title       | string | 제목                 |
+  | board.description | string | 설명                 |
+  | board.status      | string | 상태                 |
+  | board.planner     | number | 기획자 인원          |
+  | board.developer   | number | 개발자 인원          |
+  | board.designer    | number | 디자이너 인원        |
+  | board.region      | string | 지역                 |
+  | board.goal        | string | 목표                 |
+  | board.kind        | string | 종류 ex) 웹, 앱      |
+  | board.people      | string | 사용고객             |
+  | board.image       | string | 프로젝트 이미지(url) |
+  | board.created_at  | string | 작성시간             |
+  | board.modified_at | string | 수정시간             |
+  | author            | string | 게시글 작성자        |
+  | application       | json   | 지원자 리스트        |
 
 **응답예시**
 
@@ -263,22 +273,28 @@ http://fitple-last-dev.ap-northeast-2.elasticbeanstalk.com/teams/board/
 
   ``` json
   {
-      "author": "dobby1",
-      "id": 1,
-      "title": "Fitple 프로젝트 완성",
-      "description": "Fitple test",
-      "status": "delay",
-      "planner": 1,
-      "developer": 1,
-      "designer": 1,
-      "region": "서울",
-      "goal": "test",
-      "kind": "웹",
-      "people": "test",
-      "image": "https://fitple-access-s3-test.s3-ap-northeast-2.amazonaws.com/media/public/default_team.jpg",
-      "created_at": "2020-05-31T19:34:50.519963+09:00",
-      "modified_at": "2020-05-31T19:34:50.519990+09:00"
-}
+      "board": {
+          "author": "고기훈",
+          "id": 13,
+          "title": "장고 스터디 구합니다.",
+          "description": "프로젝트 설명 프로젝트 설명 프로젝트 설명 프로젝트 설명 프로젝트 설명 프로젝트 설명 프로젝트 설명 프로젝트 설명 프로젝트 설명 프로젝트 설명 프로젝트 설명 프로젝트 설명...",
+          "status": "delay",
+          "planner": 1,
+          "developer": 3,
+          "designer": 2,
+          "region": "0",
+          "goal": "목표",
+          "kind": "웹",
+          "people": "사용고객",
+          "image": "https://fitple-access-s3-test.s3-ap-northeast-2.amazonaws.com/media/public/default_team.jpg",
+          "created_at": "2020-06-03T01:06:04.865469+09:00",
+        "modified_at": "2020-06-03T01:06:04.865493+09:00"
+      },
+      "author": "고기훈",
+      "application": [
+          "sisi"
+      ]
+  }
   ```
   
   
