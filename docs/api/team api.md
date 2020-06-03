@@ -53,26 +53,26 @@
 
 - 응답: 응답에 성공하면 결과값을 JSON 형식으로 반환합니다.
 
-| 속성              | 타입   | 설명                 |
-| ----------------- | ------ | -------------------- |
-| board             | json   | 게시판 json 데이터   |
-| board.author      | string | 작성자 email         |
-| board.id          | number | Team 신청 PK         |
-| board.title       | string | 제목                 |
-| board.description | string | 설명                 |
-| board.status      | string | 상태                 |
-| board.planner     | number | 기획자 인원          |
-| board.developer   | number | 개발자 인원          |
-| board.designer    | number | 디자이너 인원        |
-| board.region      | string | 지역                 |
-| board.goal        | string | 목표                 |
-| board.kind        | string | 종류 ex) 웹, 앱      |
-| board.people      | string | 사용고객             |
-| board.image       | string | 프로젝트 이미지(url) |
-| board.created_at  | string | 작성시간             |
-| board.modified_at | string | 수정시간             |
-| author            | string | 작성자 username      |
-| application       | json   | 빈 리스트            |
+| 속성              | 타입    | 설명                 |
+| ----------------- | ------- | -------------------- |
+| board             | json    | 게시판 json 데이터   |
+| board.author      | string  | 작성자 email         |
+| board.id          | number  | Team 신청 PK         |
+| board.title       | string  | 제목                 |
+| board.description | string  | 설명                 |
+| board.status      | string  | 상태                 |
+| board.planner     | number  | 기획자 인원          |
+| board.developer   | number  | 개발자 인원          |
+| board.designer    | number  | 디자이너 인원        |
+| board.region      | string  | 지역                 |
+| board.goal        | string  | 목표                 |
+| board.kind        | string  | 종류 ex) 웹, 앱      |
+| board.people      | string  | 사용고객             |
+| board.image       | string  | 프로젝트 이미지(url) |
+| board.created_at  | string  | 작성시간             |
+| board.modified_at | string  | 수정시간             |
+| author            | string  | 작성자 username      |
+| application       | Boolean | Default False        |
 
 **응답예시**
 
@@ -129,7 +129,7 @@
         "modified_at": "2020-05-22T13:44:18.477168+09:00"
       },
     	"author": "dobby1",
-      "application": []
+      "application": False
   }
   ```
 
@@ -240,26 +240,26 @@ http://fitple-last-dev.ap-northeast-2.elasticbeanstalk.com/teams/board/
 
 - 응답: 응답에 성공하면 Team detail 결과 값을 Json 형식으로 반환합니다.
 
-  | 속성              | 타입   | 설명                 |
-  | ----------------- | ------ | -------------------- |
-  | board             | json   | 게시판 데이터        |
-  | board.author      | string | 작성자 email         |
-  | board.id          | number | Team 신청 PK         |
-  | board.title       | string | 제목                 |
-  | board.description | string | 설명                 |
-  | board.status      | string | 상태                 |
-  | board.planner     | number | 기획자 인원          |
-  | board.developer   | number | 개발자 인원          |
-  | board.designer    | number | 디자이너 인원        |
-  | board.region      | string | 지역                 |
-  | board.goal        | string | 목표                 |
-  | board.kind        | string | 종류 ex) 웹, 앱      |
-  | board.people      | string | 사용고객             |
-  | board.image       | string | 프로젝트 이미지(url) |
-  | board.created_at  | string | 작성시간             |
-  | board.modified_at | string | 수정시간             |
-  | author            | string | 게시글 작성자        |
-  | application       | json   | 지원자 리스트        |
+  | 속성              | 타입   | 설명                       |
+  | ----------------- | ------ | -------------------------- |
+  | board             | json   | 게시판 데이터              |
+  | board.author      | string | 작성자 email               |
+  | board.id          | number | Team 신청 PK               |
+  | board.title       | string | 제목                       |
+  | board.description | string | 설명                       |
+  | board.status      | string | 상태                       |
+  | board.planner     | number | 기획자 인원                |
+  | board.developer   | number | 개발자 인원                |
+  | board.designer    | number | 디자이너 인원              |
+  | board.region      | string | 지역                       |
+  | board.goal        | string | 목표                       |
+  | board.kind        | string | 종류 ex) 웹, 앱            |
+  | board.people      | string | 사용고객                   |
+  | board.image       | string | 프로젝트 이미지(url)       |
+  | board.created_at  | string | 작성시간                   |
+  | board.modified_at | string | 수정시간                   |
+  | author            | string | 게시글 작성자              |
+  | application       | Bolean | 지원 유무(지원했으면 true) |
 
 **응답예시**
 
@@ -291,9 +291,7 @@ http://fitple-last-dev.ap-northeast-2.elasticbeanstalk.com/teams/board/
         "modified_at": "2020-06-03T01:06:04.865493+09:00"
       },
       "author": "고기훈",
-      "application": [
-          "sisi"
-      ]
+      "application": False
   }
   ```
   
