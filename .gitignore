@@ -44,7 +44,7 @@ django_py38
 django_py36
 
 ## env
-enc
+env/etc
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
