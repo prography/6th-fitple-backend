@@ -11,7 +11,8 @@ class TeamListSerializer(serializers.ModelSerializer):
 
 
 class TeamSerializer(serializers.ModelSerializer):
-    author = serializers.CharField() # read_only=True
+    #author = serializers.CharField(read_only=True) # read_only=True
+    # image = serializers.FileField(required=False)
 
     class Meta:
         model = Team
