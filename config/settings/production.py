@@ -102,3 +102,16 @@ with open(os.path.join(BASE_DIR, 'env/etc/s3.txt')) as f:
 
     # STATICFILES_STORAGE = ''
     DEFAULT_FILE_STORAGE = 'config.storage_backends.PublicMediaStorage'
+
+
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+
+sentry_sdk.init(
+    dsn="https://eebfe8a2a9a54c418b8d1e15ab519fd8@o327642.ingest.sentry.io/5258728",
+    integrations=[DjangoIntegration()],
+
+    # If you wish to associate users to errors (assuming you are using
+    # django.contrib.auth) you may enable sending PII data.
+    send_default_pii=True
+)

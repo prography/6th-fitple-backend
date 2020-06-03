@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'accounts',
     'teams',
+    'applications',
 ]
 
 MIDDLEWARE = [
@@ -221,26 +222,3 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers.DatabaseScheduler'
-
-if DEBUG is True:
-    # local s3 test
-    with open(os.path.join(BASE_DIR, 'env/etc/s3.txt')) as f:
-        AWS_ACCESS_KEY_ID = f.readline().strip()
-        AWS_SECRET_ACCESS_KEY = f.readline().strip()
-        AWS_REGION = f.readline().strip()
-        AWS_STORAGE_BUCKET_NAME = f.readline().strip()
-
-        AWS_S3_CUSTOM_DOMAIN = '%s.s3-%s.amazonaws.com' % (AWS_STORAGE_BUCKET_NAME, AWS_REGION)
-        AWS_S3_OBJECT_PARAMETERS = {
-            'CacheControl': 'max-age=86400',
-        }
-
-        AWS_DEFAULT_ACL = 'public-read'
-        # AWS_LOCATION = 'static' # 일단 media - image 부분만!
-        AWS_MEDIA_LOCATION = 'media'
-
-        # STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
-        MEDIA_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_MEDIA_LOCATION)
-
-        # STATICFILES_STORAGE = ''
-        DEFAULT_FILE_STORAGE = 'config.storage_backends.PublicMediaStorage'

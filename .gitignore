@@ -39,6 +39,8 @@ config/fixtures/test/*
 schema/
 
 ## virtual env
+
+django_py38
 django_py36
 
 ## env
@@ -47,3 +49,4 @@ enc
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+
