@@ -23,7 +23,7 @@ from applications.serializers import TeamApplicationSerializer
 class TeamApplicationViewSet(viewsets.GenericViewSet):
     queryset = TeamApplication.objects.all()
     serializer_class = TeamApplicationSerializer
-    permission_classes = [IsApplicationTeamLeader]
+    permission_classes = [IsAuthenticated, IsApplicationTeamLeader]
 
     # 승인/거절 api  # 팀 리더
     '''
@@ -35,12 +35,13 @@ class TeamApplicationViewSet(viewsets.GenericViewSet):
     def approve_application(self, request, *args, **kwargs):
         # pk 가 TeamApplication 거니까
         # 객체 가져와서 상태만 변경하면 되겠지 ?
+
         # try:
         application = self.get_object()  # not found ? -- TODO 에러잡기
         # print(application)
         # except:
         #     return Response({"message": "not found."}, status=status.HTTP_404_NOT_FOUND)
-        # not found + permission 에러 한 번에 못잡는다
+        # not found + permission 에러 각각 못잡는다
 
         if application.join_status == TeamApplication.WAITING:
             application.join_status = TeamApplication.APPROVED
