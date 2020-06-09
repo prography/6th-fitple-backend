@@ -9,7 +9,7 @@
 
 
 
-**임시 BaseUrl: http://fitple-last-dev.ap-northeast-2.elasticbeanstalk.com**
+**임시 BaseUrl: http://fitple-dev.ap-northeast-2.elasticbeanstalk.com**
 
 ---
 
