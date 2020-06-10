@@ -43,4 +43,12 @@ class Comment(models.Model):
     parent = models.ForeignKey('self', related_name='reply', on_delete=models.CASCADE, null=True, blank=True)
     comment = models.CharField(max_length=100)
     created_at = models.DateTimeField('생성시간', auto_now_add=True)
-    is_deleted = models.BooleanField(default=True)
+    is_deleted = models.BooleanField(default=False)
+
+
+# class Question(models.Model):
+#     team = models.ForeignKey(Team, related_name='questions', on_delete=models.CASCADE)
+#     first_question = models.CharField(max_length=100, null=True)
+#     second_question = models.CharField(max_length=100, null=True)
+#     third_question = models.CharField(max_length=100, null=True)
+
