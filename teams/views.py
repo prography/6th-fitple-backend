@@ -42,7 +42,7 @@ class TeamViewSet(viewsets.ModelViewSet):
             return Response({
                 "board": serializer.data,
                 "author": serializer.data['author'],
-                "application": []
+                "application": False
             }, status=status.HTTP_201_CREATED, headers=headers)
         except:
             return Response({"message": "Request Body Error."}, status=status.HTTP_409_CONFLICT)
@@ -53,6 +53,11 @@ class TeamViewSet(viewsets.ModelViewSet):
         app_list = []
         for app in applications:
             app_list.append(app['applicant__username'])
+        app_boolean = False
+
+        if request.user.username in app_list:
+            app_boolean = True
+
         #applicants_user = [apc.applicant for apc in applications]
 
 
@@ -61,7 +66,7 @@ class TeamViewSet(viewsets.ModelViewSet):
         return Response({
             "board": serializer.data,
             "author": serializer.data['author'],
-            "application": app_list,
+            "application": app_boolean,
         })
 
 
