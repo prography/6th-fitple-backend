@@ -12,7 +12,7 @@
 
 
 
-Base_Url: http://fitple-last-dev.ap-northeast-2.elasticbeanstalk.com
+Base_Url: http://fitple-dev.ap-northeast-2.elasticbeanstalk.com
 
 ---
 
