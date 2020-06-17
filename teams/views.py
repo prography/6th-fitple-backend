@@ -13,7 +13,6 @@ from .serializers import TeamSerializer, TeamListSerializer, CommentSerializer, 
 from .models import Team, Comment
 
 
-
 # Create your views here.
 
 
