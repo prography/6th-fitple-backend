@@ -24,7 +24,7 @@
 - 요청 URL
 
   - Test URL: http://fitple-dev.ap-northeast-2.elasticbeanstalk.com/teams/board/
-  - 서비스 URL: 추후 추가 
+  - 서비스 URL: http://fitple-deploy-dev.ap-northeast-2.elasticbeanstalk.com/teams/board/
 
 - HTTP 메서드: POST
 
@@ -157,7 +157,7 @@
 - 요청 URL
 
   - Test URL: http://fitple-dev.ap-northeast-2.elasticbeanstalk.com/teams/board/
-  - 서비스 URL: 추후 추가
+  - 서비스 URL: http://fitple-deploy-dev.ap-northeast-2.elasticbeanstalk.com/teams/board/
 
 - HTTP 메서드: GET
 
@@ -237,7 +237,7 @@ http://fitple-dev.ap-northeast-2.elasticbeanstalk.com/teams/board/
 - 요청 URL
 
   - Test URL: http://fitple-dev.ap-northeast-2.elasticbeanstalk.com/teams/board/:id/
-  - 서비스 URL: 추후 추가
+  - 서비스 URL: http://fitple-deploy-dev.ap-northeast-2.elasticbeanstalk.com/teams/board/:id/
 
 - HTTP 메서드: GET
 
@@ -311,7 +311,7 @@ http://fitple-dev.ap-northeast-2.elasticbeanstalk.com/teams/board/
 - 설명: 댓글 작성 api 입니다.
 - 요청 URL
   - Test URL: http://fitple-dev.ap-northeast-2.elasticbeanstalk.com/teams/comments/
-  - 서비스 URL: 추후 추가
+  - 서비스 URL: http://fitple-deploy-dev.ap-northeast-2.elasticbeanstalk.com/teams/comments/
 - HTTP 메서드: POST
 - 요청 Headers
 
@@ -410,7 +410,7 @@ http://fitple-dev.ap-northeast-2.elasticbeanstalk.com/teams/board/
 - 설명: 해당 게시글의 댓글 view
 - 요청 URL
   - Test URL: http://fitple-dev.ap-northeast-2.elasticbeanstalk.com/teams/comment/${id}/
-  - 서비스 URL: 추후 추가
+  - 서비스 URL: http://fitple-deploy-dev.ap-northeast-2.elasticbeanstalk.com/teams/comment/${id}/
 - HTTP 메서드: GET
 - 응답: 응답에 성공하면 댓글 data를 json 형태로 반환
 
