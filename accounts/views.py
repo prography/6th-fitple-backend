@@ -6,6 +6,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from .serializers import UserCreateSerializer, UserLoginSerializer, ProfilePageSerializer
 from .models import User, Profile
 from teams.models import Team
+## 테스트
+from config.email import send_email
 
 
 @api_view(['POST'])
@@ -60,6 +62,7 @@ def login(request):
 def userCheck(request):
     if request.method == 'POST':
         email = request.data['email']
+        send_email()
 
         if User.objects.filter(email=email).first() is None:
             return Response({

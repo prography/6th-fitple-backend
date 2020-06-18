@@ -168,6 +168,7 @@ MESSAGE_LEVEL = constants.DEBUG  # leave debug-level message
 MESSAGE_TAGS = {constants.ERROR: 'danger'}
 
 # Sending Email
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
