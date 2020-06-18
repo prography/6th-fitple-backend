@@ -6,6 +6,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from .serializers import UserCreateSerializer, UserLoginSerializer, ProfilePageSerializer
 from .models import User, Profile
 from teams.models import Team
+from applications.models import TeamApplication
 ## 테스트
 ##from config.email import send_email
 
@@ -86,6 +87,18 @@ class ProfileView(RetrieveUpdateAPIView):
         # print('뷰 함수')
         user = request.user
         profile = Profile.objects.get(user=user)
+        team = Team.objects.filter(author=user).values()
+        applications = TeamApplication.objects.filter(applicant=user).values()
+        print(applications)
+
+        my_team_list = []
+        my_application_list = []
+
+        for i in team:
+            my_team_list.append({"id": i["id"], "title": i["title"], "image": i["image"]})
+
+        for j in applications:
+            my_application_list.append({"id": j["id"], "team_id": j["team_id"], "join_status": j["join_status"], "job": j["job"]})
 
         response = {
             'success': 'True',
@@ -95,8 +108,9 @@ class ProfileView(RetrieveUpdateAPIView):
                 'phone': profile.phone,
                 'email': user.email,
                 'image': profile.image.url
-            }
-
+            },
+            'myTeam': my_team_list,
+            "myApplication": my_application_list
         }
         return Response(response, status=status.HTTP_200_OK)
 
