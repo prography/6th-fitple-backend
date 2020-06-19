@@ -51,7 +51,7 @@ class TeamViewSet(viewsets.ModelViewSet):
             return Response({
                 "board": team_serializer.data,
                 "author": team_serializer.data['author'],
-                "application": []
+                "application": False
             }, status=status.HTTP_201_CREATED, headers=headers)
         except:
             return Response({"message": "Request Body Error."}, status=status.HTTP_409_CONFLICT)
@@ -74,12 +74,26 @@ class TeamViewSet(viewsets.ModelViewSet):
         #     app_list.append(app['applicant__username'])
         # applicants_user = [apc.applicant for apc in applications]
 
-        instance = self.get_object()  # team
+        # instance = self.get_object()  # team
+
+        # applications = TeamApplication.objects.filter(team_id=pk).values("applicant__username")
+
+        app_list = []
+        for app in applicants:
+            app_list.append(app['applicant__username'])
+        app_boolean = False
+
+        if request.user.username in app_list:
+            app_boolean = True
+
+        # applicants_user = [apc.applicant for apc in applications]
+
+        instance = self.get_object()
         serializer = self.get_serializer(instance)
         return Response({
             "board": serializer.data,
             "author": serializer.data['author'],
-            # "application": app_list,
+            "application": app_boolean,
             "member": user_serializer.data,
         })
 
@@ -115,7 +129,6 @@ class TeamViewSet(viewsets.ModelViewSet):
             # team = team_serializer.save(author=self.request.user)
             application = application_serializer.save(team=team, applicant=request.user)
 
-
             # create JoinAnswers
             print('request.data["answer"]', request.data['answers'])
             answer_serializer = JoinAnswersSerializer(data=request.data['answers'])
@@ -126,7 +139,6 @@ class TeamViewSet(viewsets.ModelViewSet):
             # team = team_serializer.save(author=self.request.user)
             answer_serializer.save(application=application)
             print(3)
-
 
             # serializer = TeamApplicationSerializer(data=request.data)
             # team 은 kwargs 에서 구분하고

@@ -83,9 +83,6 @@ class ProfilePageSerializer(serializers.Serializer):
         instance.profile.save()
         return instance
 
-    # def create(self, validated_data):
-    #     pass
-
 
 class UserSimpleSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()  ## 시리얼라이저 메소드

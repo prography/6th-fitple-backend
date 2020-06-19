@@ -1,7 +1,6 @@
 from .base import *
 import os
 
-
 # For the deployment checklist automatically, you should use a command 'python manage.py check --deploy'
 
 DEBUG = False
@@ -23,7 +22,7 @@ with open('env/etc/db.txt') as db_info:
             'ATOMIC_REQUESTS': True,
         }
     }
-# redirect URL
+    # redirect URL
     REDIRECT_URL = 'https://myUrl.com'
 # email setting
 #     EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
@@ -46,7 +45,6 @@ SECURE_HSTS_PRELOAD = True
 
 SECURE_SSL_REDIRECT = False  # the SecurityMiddleware redirects all non-HTTPS request to HTTPS
 
-
 # Error reporting
 ADMINS = [
     ('paikend', 'paikend@gmail.com'),
@@ -55,9 +53,8 @@ MANAGERS = ADMINS
 # an email address of an account to send error reporting emails
 SERVER_EMAIL = 'paikend@gmail.com'
 
-
 # External File Storages (django-storages + aws S3(boto3))
-INSTALLED_APPS += ['storages',]
+INSTALLED_APPS += ['storages', ]
 
 # Administrator1
 # AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
@@ -103,12 +100,11 @@ with open(os.path.join(BASE_DIR, 'env/etc/s3.txt')) as f:
     # STATICFILES_STORAGE = ''
     DEFAULT_FILE_STORAGE = 'config.storage_backends.PublicMediaStorage'
 
-
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
 sentry_sdk.init(
-    dsn="https://eebfe8a2a9a54c418b8d1e15ab519fd8@o327642.ingest.sentry.io/5258728",
+    dsn="https://f1829f86313b4cf4beb1c87cbacc8582@o327642.ingest.sentry.io/5271277",
     integrations=[DjangoIntegration()],
 
     # If you wish to associate users to errors (assuming you are using
