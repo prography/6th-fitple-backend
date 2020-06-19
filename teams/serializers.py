@@ -11,13 +11,15 @@ class TeamListSerializer(serializers.ModelSerializer):
 
 
 class TeamSerializer(serializers.ModelSerializer):
-    author = serializers.CharField(read_only=True) # read_only=True
+    author = serializers.CharField(read_only=True)  # read_only=True
+
     # image = serializers.FileField(required=False)
 
     class Meta:
         model = Team
-        fields = ('author', 'id', 'title', 'description', 'status', 'planner', 'developer', 'designer',
-                  'region', 'goal', 'kind', 'people', 'image', 'created_at', 'modified_at')
+        fields = ('author', 'id', 'title', 'description', 'planner', 'developer', 'designer',
+                  'region', 'goal', 'kind', 'people', 'image', 'created_at', 'modified_at', 'active_status',
+                  'recruitment_deadline')
         read_only_fields = ['author']
 
 

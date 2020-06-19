@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
@@ -65,3 +65,16 @@ class TeamApplicationViewSet(viewsets.GenericViewSet):
             # print(serializer.data)
             return Response({"message": "ok"}, status=status.HTTP_200_OK)
         return Response({"message": "Application Status Error."}, status=status.HTTP_400_BAD_REQUEST)
+
+
+# @api_view(['GET'])
+# @permission_classes([IsAuthenticated])
+# def get_questions(request):
+#
+#     ''' response format -- 피드백받기
+#     :return:
+#     {
+#         "questions" : serializer.data
+#     }
+#     '''
+#     pass
