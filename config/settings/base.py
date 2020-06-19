@@ -180,6 +180,7 @@ CORS_ORIGIN_WHITELIST = (
 CORS_ORIGIN_REGEX_WHITELIST = (r'^(https?://)?(\w+\.)?url\.com$',)
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_ALLOW_ALL = True
+
 # django-extenstions graph models + pyparsing + pydot
 GRAPH_MODELS = {
     'all_applications': True,

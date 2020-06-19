@@ -84,7 +84,6 @@ class ProfilePageSerializer(serializers.Serializer):
         return instance
 
 
-
 class UserSimpleSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()  ## 시리얼라이저 메소드
 

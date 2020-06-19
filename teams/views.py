@@ -6,9 +6,10 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from applications.models import TeamApplication
+from accounts.serializers import UserSimpleSerializer
+from applications.models import TeamApplication, JoinQuestions
 from applications.permissions import IsTeamLeader, IsOwner
-from applications.serializers import TeamApplicationSerializer
+from applications.serializers import TeamApplicationSerializer, JoinQuestionsSerializer, JoinAnswersSerializer
 from .serializers import TeamSerializer, TeamListSerializer, CommentSerializer, TeamOnlyCommentSerializer
 from .models import Team, Comment
 
@@ -26,39 +27,66 @@ class TeamViewSet(viewsets.ModelViewSet):
             return TeamListSerializer
         return self.serializer_class
 
-    def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+    # def perform_create(self, serializer):
+    #     serializer.save(author=self.request.user)
 
     def create(self, request, *args, **kwargs):
         # debug ok
         try:
 
-            serializer = self.get_serializer(data=request.data)
+            # create Team
+            print('request.data["team"]', request.data['team'])
+            team_serializer = self.get_serializer(data=request.data['team'])
+            team_serializer.is_valid(raise_exception=True)
+            team = team_serializer.save(author=self.request.user)
 
-            serializer.is_valid(raise_exception=True)
-            self.perform_create(serializer)
-            headers = self.get_success_headers(serializer.data)
+            # create Question
+            print("request.data['questions']", request.data['questions'])
+            question_serializer = JoinQuestionsSerializer(data=request.data['questions'])
+            question_serializer.is_valid(raise_exception=True)
+            question_serializer.save(team=team)  # question 에 team 주입
+
+            # self.perform_create(serializer)
+            headers = self.get_success_headers(team_serializer.data)
             return Response({
-                "board": serializer.data,
-                "author": serializer.data['author'],
+                "board": team_serializer.data,
+                "author": team_serializer.data['author'],
                 "application": False
             }, status=status.HTTP_201_CREATED, headers=headers)
         except:
             return Response({"message": "Request Body Error."}, status=status.HTTP_409_CONFLICT)
 
     def retrieve(self, request, pk=None):
-        applications = TeamApplication.objects.filter(team_id=pk).values("applicant__username")
-        
+        applicants = TeamApplication.objects.filter(  # 해당 팀의
+            team_id=pk
+        ).filter(  # 승인된 상태
+            join_status=TeamApplication.APPROVED
+        ).values('applicant__id', 'applicant__username', 'applicant__profile__image')  # dict
+        # print('values',applications,type(applications)) # type: QuerySet
+
+        # application_serializer = TeamApplicationSerializer(instance=applications, many=True)
+        # print(application_serializer.data)
+        user_serializer = UserSimpleSerializer(instance=applicants, many=True)
+
+        # app_list 는 없어도 되려나 ? -- 물어보자! TODO
+        # app_list = []
+        # for app in applications:
+        #     app_list.append(app['applicant__username'])
+        # applicants_user = [apc.applicant for apc in applications]
+
+        # instance = self.get_object()  # team
+
+        # applications = TeamApplication.objects.filter(team_id=pk).values("applicant__username")
+
         app_list = []
-        for app in applications:
+        for app in applicants:
             app_list.append(app['applicant__username'])
         app_boolean = False
 
         if request.user.username in app_list:
             app_boolean = True
 
-        #applicants_user = [apc.applicant for apc in applications]
-
+        # applicants_user = [apc.applicant for apc in applications]
 
         instance = self.get_object()
         serializer = self.get_serializer(instance)
@@ -66,8 +94,8 @@ class TeamViewSet(viewsets.ModelViewSet):
             "board": serializer.data,
             "author": serializer.data['author'],
             "application": app_boolean,
+            "member": user_serializer.data,
         })
-
 
     # 일단 다 가져오고 각각 커스텀 할 부분 생각하기
     @action(methods=['post', 'get'], detail=True,
@@ -93,20 +121,39 @@ class TeamViewSet(viewsets.ModelViewSet):
             if request.user.email in applicants_email:
                 return Response({"message": "Duplicated applicant's email."}, status=status.HTTP_400_BAD_REQUEST)
 
-            serializer = TeamApplicationSerializer(data=request.data)
+            # create Application
+            print('request.data["team"]', request.data['team'])
+            application_serializer = TeamApplicationSerializer(data=request.data['team'])
+            application_serializer.is_valid(raise_exception=True)
+            team = Team.objects.get(pk=kwargs['pk'])
+            # team = team_serializer.save(author=self.request.user)
+            application = application_serializer.save(team=team, applicant=request.user)
+
+            # create JoinAnswers
+            print('request.data["answer"]', request.data['answers'])
+            answer_serializer = JoinAnswersSerializer(data=request.data['answers'])
+            print(1)
+            answer_serializer.is_valid(raise_exception=True)
+            print(2)
+            # team = Team.objects.get(pk=kwargs['pk'])
+            # team = team_serializer.save(author=self.request.user)
+            answer_serializer.save(application=application)
+            print(3)
+
+            # serializer = TeamApplicationSerializer(data=request.data)
             # team 은 kwargs 에서 구분하고
             # 작성자는 request.user
             # 당장은 직무만 선택하는 로직 작성하자! -- 다른건 동작 확인하고 계획하자! -- 다른거래봤자 질문인데 3개만 제한해서 작성하기로 하자 -- 3개이하
-            serializer.is_valid(raise_exception=True)
-            team = Team.objects.get(pk=kwargs['pk'])
+            # serializer.is_valid(raise_exception=True)
+            # team = Team.objects.get(pk=kwargs['pk'])
             # 신청한 직무에 대해 초과 인원 뺄 필요가 당장은 없겠다 -- 의식의흐름... 일단 다 신청받기
-            serializer.save(team=team, applicant=request.user)
+            # serializer.save(team=team, applicant=request.user)
 
             response = {
                 # "message": f"'{self.request.user.username}' applies to Team: '{team.title}'"
                 "message": "ok"
             }
-            headers = self.get_success_headers(serializer.data)
+            headers = self.get_success_headers(application_serializer.data)
             return Response(response, status=status.HTTP_201_CREATED, headers=headers)
 
         elif request.method == 'GET':
@@ -158,8 +205,7 @@ class TeamViewSet(viewsets.ModelViewSet):
             url_name='detail_applications', permission_classes=[IsOwner])
     def retrieve_update_cancel_application(self, request, *args, **kwargs):  # 인증된 사용자
         if request.method == 'GET':
-            '''
-            url : GET  teams/{detail:팀id}/applications/{detail:신청id}
+            ''' url : GET  teams/{detail:팀id}/applications/{detail:신청id}
             '''
             # update 위해 화면에 뿌려줄 기존 데이터
 
@@ -180,8 +226,7 @@ class TeamViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         elif request.method == 'PUT':
-            '''
-            url : PUT  teams/{detail}/applications/{detail}
+            ''' url : PUT  teams/{detail}/applications/{detail}
             '''
             # 신청 정보 수정
             # 대기중 일 때만 가능해야겠지
@@ -232,6 +277,46 @@ class TeamViewSet(viewsets.ModelViewSet):
             return Response({"message": "ok"}, status=status.HTTP_200_OK)
 
         return Response({"message": "method not allowed."}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    @action(methods=['delete'], detail=True, url_path='applications/cancel',
+            url_name='detail_applications', permission_classes=[IsOwner])
+    def cancel_application(self, request, *args, **kwargs):  # 팀 신청한 사용자
+
+        # kwargs['pk'] # team_pk
+        # self.request.user # applicant
+
+        ## 기존
+
+        # 객체 가져오면서 자동으로 본인인지 확인하는구나!
+        try:
+            application = TeamApplication.objects.get(applicant=self.request.user)
+        except:
+            return Response({"message": "Not Found."}, status=status.HTTP_404_NOT_FOUND)
+
+        # 실제로 삭제하지말고 취소상태로 바꾸기
+        application.join_status = TeamApplication.CANCELED
+        application.save()
+
+        return Response({"message": "ok"}, status=status.HTTP_200_OK)
+
+    @action(methods=['get'], detail=True,
+            url_path='questions', url_name='join-questions',
+            permission_classes=[IsAuthenticated])
+    def get_questions(self, request, *args, **kwargs):  # 인증된 사용자
+
+        # kwargs['pk'] # team_pk
+        try:
+            questions = JoinQuestions.objects.get(team__id=kwargs['pk'])
+        except:
+            return Response({"message": "Not Found."}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = JoinQuestionsSerializer(instance=questions)
+
+        ''' response format -- 피드백받기 TODO
+        :return:
+        {  "questions" : serializer.data  }
+        '''
+        return Response({"questions": serializer.data}, status=status.HTTP_200_OK)
 
 
 class CommentViewSet(viewsets.ModelViewSet):

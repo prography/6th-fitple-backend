@@ -34,7 +34,6 @@ def createUser(request):  # 회원가입 ?
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def login(request):
-
     if request.method == 'POST':
         serializer = UserLoginSerializer(data=request.data)
 
@@ -72,7 +71,7 @@ def userCheck(request):
         return Response({
             "message": "login",
             "email": email
-            }, status=status.HTTP_200_OK)
+        }, status=status.HTTP_200_OK)
 
 
 class ProfileView(RetrieveUpdateAPIView):
@@ -83,7 +82,6 @@ class ProfileView(RetrieveUpdateAPIView):
     # queryset 속성이 필요한가 ? list 도 아닌데 ?
 
     def retrieve(self, request, *args, **kwargs):
-
         # print('뷰 함수')
         user = request.user
         profile = Profile.objects.get(user=user)
@@ -115,7 +113,6 @@ class ProfileView(RetrieveUpdateAPIView):
         return Response(response, status=status.HTTP_200_OK)
 
     def update(self, request, *args, **kwargs):
-
         # user = request.user  # User.objects.filter(email=request.data['email']).first()
         serializer = self.get_serializer(instance=request.user, data=request.data)
 
@@ -127,6 +124,5 @@ class ProfileView(RetrieveUpdateAPIView):
         # 잘 변경됐으면 return OK -- update OK 상태코드는 뭘까 ? 200 인듯
         return Response({"message": "ok."}, status=status.HTTP_200_OK)  #
         # 아니면 return Fail
-
 
 # User + Profile : 합쳐 전달하는 get api 필요할까 ?
