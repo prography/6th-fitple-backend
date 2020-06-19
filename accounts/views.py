@@ -5,24 +5,16 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from .serializers import UserCreateSerializer, UserLoginSerializer, ProfilePageSerializer
 from .models import User, Profile
-from config.settings.production import MEDIA_URL
+from teams.models import Team
+from applications.models import TeamApplication
+## 테스트
+##from config.email import send_email
 
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def createUser(request):  # 회원가입 ?
-    '''
-    (req)
-    email
-    username
-    password
-    passwordCheck -- pass
-    (res)
-    message
 
-    :param request:
-    :return:
-    '''
     if request.method == 'POST':
         # password_check = request.data.pop('passwordCheck')  #
         serializer = UserCreateSerializer(data=request.data)
@@ -42,18 +34,7 @@ def createUser(request):  # 회원가입 ?
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def login(request):
-    '''
-    (req)
-    email
-    password
-    (res)
-    success
-    username
-    token
 
-    :param request:
-    :return:
-    '''
     if request.method == 'POST':
         serializer = UserLoginSerializer(data=request.data)
 
@@ -102,55 +83,41 @@ class ProfileView(RetrieveUpdateAPIView):
     # queryset 속성이 필요한가 ? list 도 아닌데 ?
 
     def retrieve(self, request, *args, **kwargs):
-        '''
-        (req)
-        header - token
-        (res)
-        username
-        livingArea
-        phone
-        email
-        image !!!
-        :param request:
-        :param args:
-        :param kwargs:
-        :return:
-        '''
 
         # print('뷰 함수')
         user = request.user
         profile = Profile.objects.get(user=user)
+        team = Team.objects.filter(author=user).values()
+        applications = TeamApplication.objects.filter(applicant=user).values()
+        print(applications)
 
-        # image eb에 올라가서 open() 할때 에러가 나는 듯
-        # image = MEDIA_URL + str(profile.image.open())
+        my_team_list = []
+        my_application_list = []
+
+        for i in team:
+            my_team_list.append({"id": i["id"], "title": i["title"], "image": i["image"]})
+
+        for j in applications:
+            my_application_list.append({"id": j["id"], "team_id": j["team_id"], "join_status": j["join_status"], "job": j["job"]})
 
         response = {
             'success': 'True',
-            'username': user.username,
-            'livingArea': profile.livingArea,
-            'phone': profile.phone,
-            'email': user.email,
-            'image': "image url"
+            'profile': {
+                'username': user.username,
+                'livingArea': profile.livingArea,
+                'phone': profile.phone,
+                'email': user.email,
+                'image': profile.image.url
+            },
+            'myTeam': my_team_list,
+            "myApplication": my_application_list
         }
         return Response(response, status=status.HTTP_200_OK)
 
     def update(self, request, *args, **kwargs):
-        '''
-        (req)
-        username
-        livingArea
-        phone
-        email
-        (res)
-        message : OK, Fail(409)
-        :param request:
-        :param args:
-        :param kwargs:
-        :return:
-        '''
+
         # user = request.user  # User.objects.filter(email=request.data['email']).first()
         serializer = self.get_serializer(instance=request.user, data=request.data)
-        # User 로 참조하기
 
         if not serializer.is_valid(raise_exception=True):
             return Response({"message": "Request Body Error."}, status=status.HTTP_409_CONFLICT)
