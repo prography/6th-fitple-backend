@@ -8,9 +8,9 @@ REDIRECT_URL = 'http://localhost:3000'
 
 
 # email setiing
-# with open('env/etc/email.txt') as email:
-#     EMAIL_HOST_USER = email.readline().strip()
-#     EMAIL_HOST_PASSWORD = email.readline().strip()
+with open('env/etc/email.txt') as email:
+    EMAIL_HOST_USER = email.readline().strip()
+    EMAIL_HOST_PASSWORD = email.readline().strip()
 
 # django-debug-toolbar
 INSTALLED_APPS += ['debug_toolbar']
