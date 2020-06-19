@@ -38,17 +38,14 @@ class TeamApplication(models.Model):
     created_at = models.DateField('신청생성시간', auto_now_add=True)
 
 
-class JoinQuestions(models.Model):
+class JoinQuestion(models.Model):
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
 
-    question1 = models.TextField(default='안녕하세요! 간단한 자기소개 부탁드립니다!')
-    question2 = models.TextField(default='팀에 지원하는 동기는 무엇인가요?')  # 잘 되는지 test !!
-    question3 = models.TextField(default='팀의 어떤 부분에 기여하고 싶으신가요? 다양한 생각을 들려주세요!')
+    question = models.TextField()
 
 
-class JoinAnswers(models.Model):
+class JoinAnswer(models.Model):
     application = models.ForeignKey(TeamApplication, on_delete=models.CASCADE)
+    question = models.ForeignKey(JoinQuestion, on_delete=models.CASCADE)
 
-    answer1 = models.TextField()
-    answer2 = models.TextField()
-    answer3 = models.TextField()
+    answer = models.TextField()

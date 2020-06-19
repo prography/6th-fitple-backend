@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from accounts.serializers import ProfilePageSerializer, UserSimpleSerializer
-from applications.models import TeamApplication, JoinQuestions, JoinAnswers
+from applications.models import TeamApplication, JoinQuestion, JoinAnswer
 from teams.serializers import TeamSerializer
 
 
@@ -32,8 +32,8 @@ class TeamApplicationSerializer(serializers.ModelSerializer):
 
 class JoinQuestionsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = JoinQuestions
-        fields = ['question1', 'question2', 'question3']
+        model = JoinQuestion
+        fields = ['question']
 
     # def to_internal_value(self, data): # dict to python
     #     print("to_internal_value",data)
@@ -42,19 +42,12 @@ class JoinQuestionsSerializer(serializers.ModelSerializer):
 
 
 class JoinAnswersSerializer(serializers.ModelSerializer):
+    question = serializers.CharField(read_only=True)
+
     class Meta:
-        model = JoinAnswers
-        fields = ['answer1', 'answer2', 'answer3']
+        model = JoinAnswer
+        fields = ['question', 'answer']
 
-    def to_internal_value(self, data): # dict to python
-        print("to_internal_value",data)
 
-        # print("data[0]",data[0])
-        input_data = {'answer1': data[0], 'answer2': data[1], 'answer3': data[2]}
-        return input_data
-        # print(input_data)
-        # super().to_internal_value(input_data)
 
-        # super().to_internal_value(data)
-        # input_data = {'answer1': data[0], 'answer2': data[1], 'answer3': data[2]}
 

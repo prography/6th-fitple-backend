@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from accounts.serializers import UserSimpleSerializer
-from applications.models import TeamApplication, JoinQuestions
+from applications.models import TeamApplication, JoinQuestion
 from applications.permissions import IsTeamLeader, IsOwner
 from applications.serializers import TeamApplicationSerializer, JoinQuestionsSerializer, JoinAnswersSerializer
 from .serializers import TeamSerializer, TeamListSerializer, CommentSerializer, TeamOnlyCommentSerializer
@@ -42,9 +42,12 @@ class TeamViewSet(viewsets.ModelViewSet):
 
             # create Question
             print("request.data['questions']", request.data['questions'])
-            question_serializer = JoinQuestionsSerializer(data=request.data['questions'])
-            question_serializer.is_valid(raise_exception=True)
-            question_serializer.save(team=team)  # question 에 team 주입
+            for i in request.data['questions']:
+                dic = {"question": i}
+                question_serializer = JoinQuestionsSerializer(data=dic)
+                question_serializer.is_valid(raise_exception=True)
+
+                question_serializer.save(team=team)  # question 에 team 주입
 
             # self.perform_create(serializer)
             headers = self.get_success_headers(team_serializer.data)
@@ -306,7 +309,7 @@ class TeamViewSet(viewsets.ModelViewSet):
 
         # kwargs['pk'] # team_pk
         try:
-            questions = JoinQuestions.objects.get(team__id=kwargs['pk'])
+            questions = JoinQuestion.objects.get(team__id=kwargs['pk'])
         except:
             return Response({"message": "Not Found."}, status=status.HTTP_404_NOT_FOUND)
 
