@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from accounts.serializers import ProfilePageSerializer, UserSimpleSerializer
-from applications.models import TeamApplication
+from applications.models import TeamApplication, JoinQuestion, JoinAnswer
 from teams.serializers import TeamSerializer
 
 
@@ -12,16 +12,11 @@ class TeamApplicationSerializer(serializers.ModelSerializer):
     # team = TeamSerializer(read_only=True)  # read_only=True :: id 만 전달해도 되나 ?
     # 질문/대답도 같이 반환해야 하는데!
     applicant = UserSimpleSerializer(read_only=True)
-    # applicant_name = serializers.
-    # applicant_id = #ProfilePageSerializer()#UserSerializer#serializers.CharField() # 또
-    # 다시 정보 요청을 위해 id 는 반드시 있어야할거같은데, 시리얼라이저를 새로 만들까 고민
-    # id 랑 Username 만 있는 ? -- 다른거 더 필요한거 있을까 ? 신청정보 볼 때 user 정보도 한꺼번에 보길 원할까 ? 물어보기
-    # 이미지도 있어야지.. 만드는게 낫겠다!
 
     class Meta:
         model = TeamApplication
-        fields = ['id','applicant', 'join_status', 'job', 'created_at']#'team',
-        read_only_fields = ['id','applicant', 'join_status', 'created_at']#'team', 이렇게 하면 team 빠지나 ? oo
+        fields = ['id', 'applicant', 'join_status', 'job', 'created_at']  # 'team',
+        read_only_fields = ['id', 'applicant', 'join_status', 'created_at']  # 'team', 이렇게 하면 team 빠지나 ? oo
 
     def update(self, instance, validated_data):
         instance.job = validated_data.get('job', instance.job)
@@ -33,3 +28,26 @@ class TeamApplicationSerializer(serializers.ModelSerializer):
     #     print(type(attrs))
     #     print(attrs.values())
     #     return attrs
+
+
+class JoinQuestionsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = JoinQuestion
+        fields = ['question']
+
+    # def to_internal_value(self, data): # dict to python
+    #     print("to_internal_value",data)
+    #
+    #     super().to_internal_value(data)
+
+
+class JoinAnswersSerializer(serializers.ModelSerializer):
+    question = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = JoinAnswer
+        fields = ['question', 'answer']
+
+
+
+
