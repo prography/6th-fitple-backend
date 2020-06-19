@@ -43,8 +43,7 @@ class TeamViewSet(viewsets.ModelViewSet):
             # create Question
             print("request.data['questions']", request.data['questions'])
             for i in request.data['questions']:
-                dic = {"question": i}
-                question_serializer = JoinQuestionsSerializer(data=dic)
+                question_serializer = JoinQuestionsSerializer(data=i)
                 question_serializer.is_valid(raise_exception=True)
 
                 question_serializer.save(team=team)  # question 에 team 주입
