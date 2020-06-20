@@ -12,7 +12,7 @@ from applications.permissions import IsTeamLeader, IsOwner
 from applications.serializers import TeamApplicationSerializer, JoinQuestionsSerializer, JoinAnswersSerializer
 from .serializers import TeamSerializer, TeamListSerializer, CommentSerializer, TeamOnlyCommentSerializer
 from .models import Team, Comment
-
+from accounts.models import User, Profile
 
 # Create your views here.
 
@@ -70,10 +70,6 @@ class TeamViewSet(viewsets.ModelViewSet):
         # print(application_serializer.data)
         user_serializer = UserSimpleSerializer(instance=applicants, many=True)
 
-        # app_list 는 없어도 되려나 ? -- 물어보자! TODO
-        # app_list = []
-        # for app in applications:
-        #     app_list.append(app['applicant__username'])
         # applicants_user = [apc.applicant for apc in applications]
 
         # instance = self.get_object()  # team
@@ -92,10 +88,18 @@ class TeamViewSet(viewsets.ModelViewSet):
 
         instance = self.get_object()
         serializer = self.get_serializer(instance)
+        #serializer.data["author"] = serializer.data["author"][2]
+        author_id = serializer.data["author"]['id']
+        board_data = serializer.data
+        board_data["author"] = serializer.data["author"]['username']
+        leader = Profile.objects.filter(user=author_id).values('image')[0]
+        leader_info = {"id": author_id, "username": serializer.data["author"]['username'], "image": leader["image"]}
+
         return Response({
-            "board": serializer.data,
-            "author": serializer.data['author'],
+            "board": board_data,
+            "author": serializer.data['author']['username'],
             "application": app_boolean,
+            "leader": leader_info,
             "member": user_serializer.data,
         })
 

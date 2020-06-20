@@ -133,11 +133,29 @@
 
   - ```json
     {
-        'success': 'True',
-        'username': '이름',
-        'livingArea': '거주지',
-        'phone': '폰번호',
-        'email': '이메일'
+        "success": "True",
+        "profile": {
+            "username": "lemontech",
+            "livingArea": null,
+            "phone": null,
+            "email": "lemontech119@gmail.com",
+            "image": "https://fitple-access-s3-test.s3-ap-northeast-2.amazonaws.com/media/public/default_user.png"
+        },
+        "myTeam": [
+            {
+                "id": 3,
+                "title": "팀리더 팀생성 테스트 final",
+                "image": "default_team.jpg"
+            }
+        ],
+        "myApplication": [
+            {
+                "id": 4,
+                "team_id": 2,
+                "join_status": "Waiting",
+                "job": "Developer"
+            }
+        ]
     }
     ```
 

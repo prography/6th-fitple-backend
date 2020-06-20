@@ -14,7 +14,6 @@
 
 [댓글 view](#### 댓글 view)
 
-
 --------
 
 #### Team 생성
@@ -132,7 +131,7 @@
         "modified_at": "2020-05-22T13:44:18.477168+09:00"
       },
     	"author": "dobby1",
-      "application": []
+      "application": false
   }
   ```
 
