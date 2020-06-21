@@ -5,5 +5,6 @@ urlpatterns = [
     path('user/create/', views.createUser),
     path('user/login/', views.login),
     path('user/check/', views.userCheck),
+    path('user/profile/<int:pk>/', views.getProfile),
     path('profile/', views.ProfileView.as_view()),
 ]

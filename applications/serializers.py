@@ -30,10 +30,18 @@ class TeamApplicationSerializer(serializers.ModelSerializer):
     #     return attrs
 
 
-class JoinQuestionsSerializer(serializers.ModelSerializer):
+# class JoinQuestionListSerializer(serializers.ListSerializer):
+#     def create(self, validated_data):
+#         questions = [JoinQuestion(**item) for item in validated_data]
+#         return JoinQuestion.objects.bulk_create(questions)
+
+
+class JoinQuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = JoinQuestion
-        fields = ['question']
+        fields = ['id', 'question']
+        # read_only_fields = ['id','team']
+        # list_serializer_class = JoinQuestionListSerializer
 
     # def to_internal_value(self, data): # dict to python
     #     print("to_internal_value",data)
@@ -41,13 +49,10 @@ class JoinQuestionsSerializer(serializers.ModelSerializer):
     #     super().to_internal_value(data)
 
 
-class JoinAnswersSerializer(serializers.ModelSerializer):
-    question = serializers.CharField(read_only=True)
+class JoinAnswerSerializer(serializers.ModelSerializer):
+    # question = serializers.CharField(read_only=True)
 
     class Meta:
         model = JoinAnswer
-        fields = ['question', 'answer']
-
-
-
-
+        fields = ['answer', 'question'] #'question',
+        

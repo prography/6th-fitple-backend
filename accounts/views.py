@@ -74,6 +74,17 @@ def userCheck(request):
         }, status=status.HTTP_200_OK)
 
 
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def getProfile(request, pk, format=None):
+    if request.method == "GET":
+        profile = Profile.objects.filter(user=pk).values()[0]
+        username = User.objects.filter(id=pk).values()[0]
+        profile["username"] = username["username"]
+
+        return Response(profile)
+
+
 class ProfileView(RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated]
     # profile -- read/update 가 달랐던가 ? 예를 들어, 이메일을 수정 안하려면 다르겠지 !
