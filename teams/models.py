@@ -24,8 +24,8 @@ class Team(models.Model):
     designer = models.PositiveIntegerField('디자이너', default=0)
     region = models.CharField('지역', max_length=20)
     goal = models.CharField('목표', max_length=10)
-    kind = models.CharField('종류', max_length=40)
-    people = models.CharField('사용고객', max_length=20)
+    # kind = models.CharField('종류', max_length=40) #
+    # people = models.CharField('사용고객', max_length=20) #
     image = models.FileField('이미지',
                              upload_to=s3_test_image_upload_to,
                              storage=PublicMediaStorage(),
@@ -45,7 +45,7 @@ class Team(models.Model):
         choices=ACTIVE_STATUS_CHOICES,
         default=RECRUITMENT_IN_PROGRESS
     )
-    recruitment_deadline = models.CharField(max_length=15, default='0000-00-00')
+    # recruitment_deadline = models.CharField(max_length=15, default='0000-00-00') #
 
     class Meta:
         ordering = ["-created_at"]

@@ -91,6 +91,11 @@ class UserSimpleSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'username', 'image']
 
-    def get_image(self, obj):
+    def get_image(self, obj): # Team
         # print(dict(obj.profile.image)) # 출력 안된다 utf-8 인코딩 오류난다
         return obj.profile.image.url
+    # return {
+    #     obj.author.id
+    #     obj.author.username
+    #     obj.author.profile.image.url
+    # }

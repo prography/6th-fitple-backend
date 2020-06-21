@@ -1,4 +1,5 @@
 from rest_framework import serializers
+
 from .models import Team, Comment
 
 
@@ -14,13 +15,21 @@ class TeamSerializer(serializers.ModelSerializer):
     author = serializers.CharField(read_only=True)  # read_only=True
 
     # image = serializers.FileField(required=False)
+    # question = JoinQuestionsSerializer(write_only=True) # 팀 생성할 때만
 
     class Meta:
         model = Team
         fields = ('author', 'id', 'title', 'description', 'planner', 'developer', 'designer',
-                  'region', 'goal', 'kind', 'people', 'image', 'created_at', 'modified_at', 'active_status',
-                  'recruitment_deadline')
-        read_only_fields = ['author']
+                  'region', 'goal', 'image', 'created_at', 'modified_at', 'active_status')
+
+    # def create(self, validated_data):
+    #
+    #     team = Team(**validated_data)
+    #     return team
+    # def to_internal_value(self, data): # dict to python
+    #     print("to_internal_value",data)
+    #
+    #     return data['team']
 
 
 class CommentSerializer(serializers.ModelSerializer):
