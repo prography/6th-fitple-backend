@@ -9,6 +9,8 @@
 - [신청 cancel api](##신청 cancel api)
 - [신청 승인 api](##신청 승인 api)
 - [신청 거절 api](##신청 거절 api)
+- [질문 list](#### 질문 list)
+- 
 
 
 
@@ -42,12 +44,27 @@ Base_Url: http://fitple-deploy-dev.ap-northeast-2.elasticbeanstalk.com/
     ```
 
   - ```cmd
-    # 예시
     {
-        "job": "Planner"
+        "team": {
+        	"job": "Developer"
+    	},
+        "answers": [
+          {
+                "question": 7,
+                "answer": "...대답1"
+        	},
+            {
+                "question": 8,
+                "answer": "...대답2"
+        	},
+            {
+                "question": 9,
+                "answer": "...대답3"
+            }
+        ]
     }
     ```
-
+    
     
 
 - ##### response
@@ -156,18 +173,30 @@ Base_Url: http://fitple-deploy-dev.ap-northeast-2.elasticbeanstalk.com/
 
   - ```json
     {
-        "id": 10, // 신청 id
-        "applicant": { // 지원자 간단정보
-            "id": 5, // id
-            "username": "sisi-apply", // username
-            "image": "https://fitple-access-s3-test.s3-ap-northeast-2.amazonaws.com/media/default_user.png" //image
+        "application": {
+            "id": 20,
+            "applicant": {
+                "id": 8,
+                "username": "sisi-member",
+                "image": "https://fitple-access-s3-test.s3-ap-northeast-2.amazonaws.com/media/default_user.png"
+            },
+            "join_status": "Waiting",
+            "job": "Developer",
+            "created_at": "2020-06-20"
         },
-        "join_status": "Rejected", //지원상태
-        "job": "Developer", //지원직무
-        "created_at": "2020-06-02" //생성일
+      "answer": [
+            {
+                "answer": "...대답1",
+                "question": 7
+            },
+            {
+                "answer": "...대답2",
+                "question": 8
+            }
+        ]
     }
     ```
-
+  
   
 
 ## 신청 update api
@@ -340,3 +369,29 @@ Base_Url: http://fitple-deploy-dev.ap-northeast-2.elasticbeanstalk.com/
 
     
 
+#### 질문 list
+
+- url
+
+  - GET
+  - http://127.0.0.1:8000/teams/board/{team_pk}/questions/
+  - response
+
+  ``` json
+  [
+      {
+          "id": 7,
+          "question": "시현질문11"
+      },
+      {
+          "id": 8,
+          "question": "시현질문22"
+      },
+      {
+          "id": 9,
+          "question": "시현질문33"
+      }
+  ]
+  ```
+
+  

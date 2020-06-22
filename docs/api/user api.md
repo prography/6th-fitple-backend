@@ -6,6 +6,8 @@
 - [로그인 API](####로그인 API)
 - [이메일 중복 확인 API](####이메일 중복 확인 API)
 - [프로필 READ/Update API](####프로필 READ/Update API)
+- [####프로필 read(인증 불필요)](####프로필 read(인증 불필요))
+- 
 
 
 
@@ -184,3 +186,29 @@
   - ```
     {"message": "ok."}
     ```
+
+
+
+#### 프로필 read(인증 불필요)
+
+- account/user/profile/{user_pk}/
+
+- GET
+
+  - response
+
+  ``` json
+  {
+      "id": 13,
+      "user_id": 13,
+      "livingArea": null,
+      "phone": null,
+      "image": "https://fitple-access-s3-test.s3-ap-northeast-2.amazonaws.com/media/default_user.png",
+      "username": "ado119"
+  }
+  ```
+
+  
+
+
+
