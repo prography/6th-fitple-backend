@@ -84,7 +84,6 @@ class ProfilePageSerializer(serializers.Serializer):
         return instance
 
 
-
 class UserSimpleSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()  ## 시리얼라이저 메소드
 
@@ -92,6 +91,22 @@ class UserSimpleSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'username', 'image']
 
-    def get_image(self, obj):
+    def get_image(self, obj): # Team
         # print(dict(obj.profile.image)) # 출력 안된다 utf-8 인코딩 오류난다
+        return obj['image']
+        #return obj.profile.image.url
+    # return {
+    #     obj.author.id
+    #     obj.author.username
+    #     obj.author.profile.image.url
+    # }
+
+class UserSimpleSerializerVerTwo(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()  ## 시리얼라이저 메소드
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'image']
+
+    def get_image(self, obj): # Team
         return obj.profile.image.url

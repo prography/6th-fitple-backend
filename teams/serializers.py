@@ -1,4 +1,5 @@
 from rest_framework import serializers
+
 from .models import Team, Comment
 
 
@@ -11,14 +12,22 @@ class TeamListSerializer(serializers.ModelSerializer):
 
 
 class TeamSerializer(serializers.ModelSerializer):
-    author = serializers.CharField(read_only=True) # read_only=True
+    author = serializers.SerializerMethodField()
+    #author = serializers.CharField(read_only=True)  # read_only=True
     # image = serializers.FileField(required=False)
+    # question = JoinQuestionsSerializer(write_only=True) # 팀 생성할 때만
 
     class Meta:
         model = Team
-        fields = ('author', 'id', 'title', 'description', 'status', 'planner', 'developer', 'designer',
-                  'region', 'goal', 'kind', 'people', 'image', 'created_at', 'modified_at')
-        read_only_fields = ['author']
+        fields = ('author', 'id', 'title', 'description', 'planner', 'developer', 'designer',
+                  'region', 'goal', 'image', 'created_at', 'modified_at', 'active_status')
+
+    def get_author(self, obj):
+        return {
+            "id": obj.author.id,
+            "username": obj.author.username,
+            "image": obj.author.profile.image.url
+        }
 
 
 class CommentSerializer(serializers.ModelSerializer):

@@ -9,6 +9,8 @@ from teams.models import Team
 from applications.models import TeamApplication
 ## 테스트
 ##from config.email import send_email
+# 시간이 없어서 임시로 작업
+from config.settings.production import MEDIA_URL
 
 
 @api_view(['POST'])
@@ -34,7 +36,6 @@ def createUser(request):  # 회원가입 ?
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def login(request):
-
     if request.method == 'POST':
         serializer = UserLoginSerializer(data=request.data)
 
@@ -72,7 +73,19 @@ def userCheck(request):
         return Response({
             "message": "login",
             "email": email
-            }, status=status.HTTP_200_OK)
+        }, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def getProfile(request, pk, format=None):
+    if request.method == "GET":
+        profile = Profile.objects.filter(user=pk).values()[0]
+        username = User.objects.filter(id=pk).values()[0]
+        profile["username"] = username["username"]
+        profile["image"] = MEDIA_URL+profile["image"]
+
+        return Response(profile)
 
 
 class ProfileView(RetrieveUpdateAPIView):
@@ -83,13 +96,11 @@ class ProfileView(RetrieveUpdateAPIView):
     # queryset 속성이 필요한가 ? list 도 아닌데 ?
 
     def retrieve(self, request, *args, **kwargs):
-
         # print('뷰 함수')
         user = request.user
         profile = Profile.objects.get(user=user)
         team = Team.objects.filter(author=user).values()
         applications = TeamApplication.objects.filter(applicant=user).values()
-        print(applications)
 
         my_team_list = []
         my_application_list = []
@@ -115,7 +126,6 @@ class ProfileView(RetrieveUpdateAPIView):
         return Response(response, status=status.HTTP_200_OK)
 
     def update(self, request, *args, **kwargs):
-
         # user = request.user  # User.objects.filter(email=request.data['email']).first()
         serializer = self.get_serializer(instance=request.user, data=request.data)
 
@@ -127,6 +137,5 @@ class ProfileView(RetrieveUpdateAPIView):
         # 잘 변경됐으면 return OK -- update OK 상태코드는 뭘까 ? 200 인듯
         return Response({"message": "ok."}, status=status.HTTP_200_OK)  #
         # 아니면 return Fail
-
 
 # User + Profile : 합쳐 전달하는 get api 필요할까 ?
