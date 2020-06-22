@@ -269,7 +269,7 @@ Base_Url: http://fitple-deploy-dev.ap-northeast-2.elasticbeanstalk.com/
 
     
 
-## 신청 승인 api
+## ap신청 승인 api
 
 - ##### url
 

@@ -115,6 +115,7 @@ class TeamViewSet(viewsets.ModelViewSet):
             url_path='applications', url_name='about_applications',
             permission_classes=[IsAuthenticated])
     def create_and_list_application(self, request, *args, **kwargs):  # 인증된 사용자
+        ## 팀 신청 api
         if request.method == 'POST':
             '''
             header - token :: 지원자 정보
@@ -143,6 +144,7 @@ class TeamViewSet(viewsets.ModelViewSet):
             # create Application
             print('request.data["team"]', request.data['team'])
             application_serializer = TeamApplicationSerializer(data=request.data['team'])
+            print(application_serializer)
             application_serializer.is_valid(raise_exception=True)
             try:
                 team = Team.objects.get(pk=kwargs['pk'])

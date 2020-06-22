@@ -100,3 +100,13 @@ class UserSimpleSerializer(serializers.ModelSerializer):
     #     obj.author.username
     #     obj.author.profile.image.url
     # }
+
+class UserSimpleSerializerVerTwo(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()  ## 시리얼라이저 메소드
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'image']
+
+    def get_image(self, obj): # Team
+        return obj.profile.image.url
