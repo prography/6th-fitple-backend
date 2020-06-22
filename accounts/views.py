@@ -9,6 +9,8 @@ from teams.models import Team
 from applications.models import TeamApplication
 ## 테스트
 ##from config.email import send_email
+# 시간이 없어서 임시로 작업
+from config.settings.production import MEDIA_URL
 
 
 @api_view(['POST'])
@@ -81,6 +83,7 @@ def getProfile(request, pk, format=None):
         profile = Profile.objects.filter(user=pk).values()[0]
         username = User.objects.filter(id=pk).values()[0]
         profile["username"] = username["username"]
+        profile["image"] = MEDIA_URL+profile["image"]
 
         return Response(profile)
 
@@ -98,7 +101,6 @@ class ProfileView(RetrieveUpdateAPIView):
         profile = Profile.objects.get(user=user)
         team = Team.objects.filter(author=user).values()
         applications = TeamApplication.objects.filter(applicant=user).values()
-        print(applications)
 
         my_team_list = []
         my_application_list = []
