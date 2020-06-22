@@ -12,7 +12,9 @@ from applications.permissions import IsTeamLeader, IsOwner
 from applications.serializers import TeamApplicationSerializer, JoinQuestionSerializer, JoinAnswerSerializer
 from .serializers import TeamSerializer, TeamListSerializer, CommentSerializer, TeamOnlyCommentSerializer
 from .models import Team, Comment
-
+from accounts.models import User, Profile
+# 시간이 없어서 임시로 작업
+from config.settings.production import MEDIA_URL
 
 # Create your views here.
 
@@ -33,13 +35,12 @@ class TeamViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         # debug ok
         try:
-
             # create Team
-            print('request.data["team"]', request.data['team'])
             team_serializer = self.get_serializer(data=request.data['team'])
             team_serializer.is_valid(raise_exception=True)
             team = team_serializer.save(author=self.request.user)
-
+            board_data = team_serializer.data
+            board_data["author"] = team_serializer.data["author"]['username']
             # create Question
             # print("request.data['questions']", request.data['questions'])
             # question_serializer = JoinQuestionListSerializer(data=request.data['questions'])
@@ -49,7 +50,6 @@ class TeamViewSet(viewsets.ModelViewSet):
 
             questions = []
             for question in request.data['questions']:
-                print("question", question)
                 question_serializer = JoinQuestionSerializer(data=question)
                 question_serializer.is_valid(raise_exception=True)
                 question_serializer.save(team=team)  # question 에 team 주입
@@ -58,7 +58,7 @@ class TeamViewSet(viewsets.ModelViewSet):
             # self.perform_create(serializer)
             headers = self.get_success_headers(team_serializer.data)
             return Response({
-                "board": team_serializer.data,
+                "board": board_data,
                 "author": team_serializer.data['author'],
                 "application": False,
                 # "questions": questions
@@ -71,22 +71,19 @@ class TeamViewSet(viewsets.ModelViewSet):
             team_id=pk
         ).filter(  # 승인된 상태
             join_status=TeamApplication.APPROVED
-        ).values('applicant__id', 'applicant__username', 'applicant__profile__image')  # dict
-        # print('values',applications,type(applications)) # type: QuerySet
-
+        ).values('applicant__id', 'applicant__username', 'applicant__profile__image', 'job')  # dict
+        print('values', applicants ,type(applicants)) # type: QuerySet
+        application_list = []
+        for application in applicants:
+            team_member = UserSimpleSerializer(
+                {"id": application['applicant__id'], "username": application['applicant__username'],
+                 "image": application['applicant__profile__image']})
+            team_member_data = team_member.data
+            team_member_data['image'] = MEDIA_URL + team_member.data['image']
+            team_member_data['job'] = application['job']
+            application_list.append(team_member_data)
         # application_serializer = TeamApplicationSerializer(instance=applications, many=True)
         # print(application_serializer.data)
-        user_serializer = UserSimpleSerializer(instance=applicants, many=True)
-
-        # app_list 는 없어도 되려나 ? -- 물어보자! TODO
-        # app_list = []
-        # for app in applications:
-        #     app_list.append(app['applicant__username'])
-        # applicants_user = [apc.applicant for apc in applications]
-
-        # instance = self.get_object()  # team
-
-        # applications = TeamApplication.objects.filter(team_id=pk).values("applicant__username")
 
         app_list = []
         for app in applicants:
@@ -99,12 +96,18 @@ class TeamViewSet(viewsets.ModelViewSet):
         # applicants_user = [apc.applicant for apc in applications]
 
         instance = self.get_object()
+        print(instance)
         serializer = self.get_serializer(instance)
+        author = serializer.data["author"]
+        board_data = serializer.data
+        board_data["author"] = serializer.data["author"]['username']
+
         return Response({
-            "board": serializer.data,
-            "author": serializer.data['author'],
+            "board": board_data,
+            "author": serializer.data['author']['username'],
             "application": app_boolean,
-            "member": user_serializer.data,
+            "leader": author,
+            "member": application_list,
         })
 
     # 일단 다 가져오고 각각 커스텀 할 부분 생각하기
@@ -112,6 +115,7 @@ class TeamViewSet(viewsets.ModelViewSet):
             url_path='applications', url_name='about_applications',
             permission_classes=[IsAuthenticated])
     def create_and_list_application(self, request, *args, **kwargs):  # 인증된 사용자
+        ## 팀 신청 api
         if request.method == 'POST':
             '''
             header - token :: 지원자 정보
@@ -140,6 +144,7 @@ class TeamViewSet(viewsets.ModelViewSet):
             # create Application
             print('request.data["team"]', request.data['team'])
             application_serializer = TeamApplicationSerializer(data=request.data['team'])
+            print(application_serializer)
             application_serializer.is_valid(raise_exception=True)
             try:
                 team = Team.objects.get(pk=kwargs['pk'])
@@ -149,22 +154,20 @@ class TeamViewSet(viewsets.ModelViewSet):
             application = application_serializer.save(team=team, applicant=request.user)
 
             # create JoinAnswers
-            print('request.data["answer"]', request.data['answers'])
             qna_list = []
             for qna in request.data['answers']:
-                print("question", qna)
                 try:
                     question = JoinQuestion.objects.get(pk=qna['question'])
                 except:
                     return Response({"message": "Not found Team."}, status=status.HTTP_404_NOT_FOUND)
 
-                answer_serializer = JoinAnswerSerializer(data={'answer': qna['answer']})
+                # dobby_change
+                ##answer_serializer = JoinAnswerSerializer(data={'answer': qna['answer']})
+                answer_serializer = JoinAnswerSerializer(data=qna)
                 answer_serializer.is_valid(raise_exception=True)
                 answer_serializer.save(application=application, question=question)
 
                 qna_list.append(answer_serializer.validated_data)
-
-            print("qna_list", qna_list)
             # --
             #             answer_serializer = JoinAnswerSerializer(data=request.data['answers'])
             #             answer_serializer.is_valid(raise_exception=True)

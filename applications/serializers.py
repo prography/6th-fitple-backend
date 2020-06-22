@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from accounts.serializers import ProfilePageSerializer, UserSimpleSerializer
+from accounts.serializers import ProfilePageSerializer, UserSimpleSerializerVerTwo
 from applications.models import TeamApplication, JoinQuestion, JoinAnswer
 from teams.serializers import TeamSerializer
 
@@ -11,7 +11,7 @@ from teams.serializers import TeamSerializer
 class TeamApplicationSerializer(serializers.ModelSerializer):
     # team = TeamSerializer(read_only=True)  # read_only=True :: id 만 전달해도 되나 ?
     # 질문/대답도 같이 반환해야 하는데!
-    applicant = UserSimpleSerializer(read_only=True)
+    applicant = UserSimpleSerializerVerTwo(read_only=True)
 
     class Meta:
         model = TeamApplication

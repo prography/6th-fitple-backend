@@ -14,7 +14,6 @@
 
 [댓글 view](#### 댓글 view)
 
-
 --------
 
 #### Team 생성
@@ -40,17 +39,21 @@
 
   ``` json
   {
-      "title": "",
-      "description": "",
-      "status": "",
-      "planner": ${number},
-      "developer": ${number},
-      "designer": ${number},
-      "region": "",
-      "goal": "",
-      "kind": "",
-      "people": "",
-      "image": 이미지(default 가능),
+      "team": {
+  		"title": "팀리더 팀생성 테스트 final",
+  		"description": "팀리더 팀생성 테스트",
+  		"planner": 3,
+  		"developer": 3,
+  		"designer": 3,
+  		"region": "서울",
+  		"goal": "취직",
+  		"active_status": "모집진행중"
+      },
+  	"questions": [
+          {"question": "시현질문11"},
+          {"question": "시현질문22"},
+          {"question": "시현질문33"}
+      ]
   }
   ```
 
@@ -89,16 +92,21 @@
 
   ``` json
   {
-      "title": "test1",
-      "description": "testtest",
-      "status": "delay",
-      "planner": 1,
-      "developer": 1,
-      "designer": 1,
-      "region": "서",
-      "goal": "test",
-      "kind": "웹",
-      "people": "test",
+      "team": {
+  		"title": "팀리더 팀생성 테스트 final",
+  		"description": "팀리더 팀생성 테스트",
+  		"planner": 3,
+  		"developer": 3,
+  		"designer": 3,
+  		"region": "서울",
+  		"goal": "취직",
+  		"active_status": "모집진행중"
+      },
+  	"questions": [
+          {"question": "시현질문11"},
+          {"question": "시현질문22"},
+          {"question": "시현질문33"}
+      ]
   }
   ```
 
@@ -115,24 +123,26 @@
   ``` json
   {
       "board": {
-        "author": "dobby1@naver.com",
-        "id": 17,
-        "title": "test1",
-        "description": "testtest",
-        "status": "delay",
-        "planner": 1,
-        "developer": 1,
-        "designer": 1,
-        "region": "서",
-        "goal": "test",
-        "kind": "웹",
-        "people": "test",
-        "image": "http://localhost:8000/media/default.jpg",
-        "created_at": "2020-05-22T13:44:18.477133+09:00",
-        "modified_at": "2020-05-22T13:44:18.477168+09:00"
+          "author": "ado119",
+          "id": 27,
+          "title": "팀리더 팀생성 테스트 final",
+          "description": "팀리더 팀생성 테스트",
+          "planner": 3,
+          "developer": 3,
+          "designer": 3,
+          "region": "서울",
+          "goal": "취직",
+          "image": "https://fitple-access-s3-test.s3-ap-northeast-2.amazonaws.com/media/public/default_team.jpg",
+          "created_at": "2020-06-22T21:46:30.544376+09:00",
+          "modified_at": "2020-06-22T21:46:30.544418+09:00",
+          "active_status": "모집진행중"
       },
-    	"author": "dobby1",
-      "application": []
+      "author": {
+          "id": 13,
+          "username": "ado119",
+          "image": "https://fitple-access-s3-test.s3-ap-northeast-2.amazonaws.com/media/public/default_user.png"
+      },
+      "application": false
   }
   ```
 

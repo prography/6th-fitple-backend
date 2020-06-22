@@ -14,7 +14,7 @@ from config.utils import s3_test_image_upload_to
 
 
 class Team(models.Model):
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="author")
     title = models.CharField('제목', max_length=100)
     # tags = models.ManyToManyField(Tag, related_name='teams', verbose_name='태그', blank=True)
     description = models.TextField('설명')

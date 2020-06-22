@@ -9,6 +9,8 @@ from teams.models import Team
 from applications.models import TeamApplication
 ## 테스트
 ##from config.email import send_email
+# 시간이 없어서 임시로 작업
+from config.settings.production import MEDIA_URL
 
 
 @api_view(['POST'])
@@ -74,6 +76,18 @@ def userCheck(request):
         }, status=status.HTTP_200_OK)
 
 
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def getProfile(request, pk, format=None):
+    if request.method == "GET":
+        profile = Profile.objects.filter(user=pk).values()[0]
+        username = User.objects.filter(id=pk).values()[0]
+        profile["username"] = username["username"]
+        profile["image"] = MEDIA_URL+profile["image"]
+
+        return Response(profile)
+
+
 class ProfileView(RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated]
     # profile -- read/update 가 달랐던가 ? 예를 들어, 이메일을 수정 안하려면 다르겠지 !
@@ -87,7 +101,6 @@ class ProfileView(RetrieveUpdateAPIView):
         profile = Profile.objects.get(user=user)
         team = Team.objects.filter(author=user).values()
         applications = TeamApplication.objects.filter(applicant=user).values()
-        print(applications)
 
         my_team_list = []
         my_application_list = []
