@@ -16,6 +16,7 @@ from accounts.models import User, Profile
 # 시간이 없어서 임시로 작업
 from config.settings.production import MEDIA_URL
 
+
 # Create your views here.
 
 
@@ -32,6 +33,7 @@ class TeamViewSet(viewsets.ModelViewSet):
     # def perform_create(self, serializer):
     #     serializer.save(author=self.request.user)
 
+    ''' 팀 리더가 팀 생성하는 api :: POST http://127.0.0.1:8000/teams/board/ '''
     def create(self, request, *args, **kwargs):
         # debug ok
         try:
@@ -72,7 +74,7 @@ class TeamViewSet(viewsets.ModelViewSet):
         ).filter(  # 승인된 상태
             join_status=TeamApplication.APPROVED
         ).values('applicant__id', 'applicant__username', 'applicant__profile__image', 'job')  # dict
-        print('values', applicants ,type(applicants)) # type: QuerySet
+        print('values', applicants, type(applicants))  # type: QuerySet
         application_list = []
         for application in applicants:
             team_member = UserSimpleSerializer(
@@ -110,6 +112,10 @@ class TeamViewSet(viewsets.ModelViewSet):
             "member": application_list,
         })
 
+    '''
+    회원이 팀원 신청하는 api :: POST http://127.0.0.1:8000/teams/board/{team_pk}/applications/
+    팀 리더가 신청 list 요청하는 api :: GET http://127.0.0.1:8000/teams/board/{team_pk}/applications/
+    '''
     # 일단 다 가져오고 각각 커스텀 할 부분 생각하기
     @action(methods=['post', 'get'], detail=True,
             url_path='applications', url_name='about_applications',
@@ -236,7 +242,8 @@ class TeamViewSet(viewsets.ModelViewSet):
 
         return Response({"message": "method not allowed."}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-    @action(methods=['get', 'put', 'delete'], detail=True, url_path='applications/(?P<application_id>\d+)',
+    ''' 팀에 신청한 정보(직무+답변) 요청하는 api :: GET http://127.0.0.1:8000/teams/board/{team_pk}/applications/{application_pk}/ '''
+    @action(methods=['get', 'put'], detail=True, url_path='applications/(?P<application_id>\d+)',
             url_name='detail_applications', permission_classes=[IsAuthenticated])
     def retrieve_update_cancel_application(self, request, *args, **kwargs):  # 인증된 사용자
         if request.method == 'GET':
@@ -332,6 +339,7 @@ class TeamViewSet(viewsets.ModelViewSet):
 
         return Response({"message": "method not allowed."}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
+    ''' 팀에 신청한 회원이 신청 취소하는 api :: DELETE http://127.0.0.1:8000/teams/board/{team_pk}/applications/cancel/ '''
     @action(methods=['delete'], detail=True, url_path='applications/cancel',
             url_name='detail_applications', permission_classes=[IsOwner])
     def cancel_application(self, request, *args, **kwargs):  # 팀 신청한 사용자
@@ -343,16 +351,17 @@ class TeamViewSet(viewsets.ModelViewSet):
 
         # 객체 가져오면서 자동으로 본인인지 확인하는구나!
         try:
-            application = TeamApplication.objects.get(applicant=self.request.user)
+            team = Team.objects.get(pk=kwargs['pk'])
+            application = TeamApplication.objects.filter(applicant=self.request.user).filter(team=team).first()
+            # 실제로 삭제하지말고 취소상태로 바꾸기
+            application.join_status = TeamApplication.CANCELED
+            application.save()
         except:
             return Response({"message": "Not Found."}, status=status.HTTP_404_NOT_FOUND)
 
-        # 실제로 삭제하지말고 취소상태로 바꾸기
-        application.join_status = TeamApplication.CANCELED
-        application.save()
-
         return Response({"message": "ok"}, status=status.HTTP_200_OK)
 
+    ''' 팀의 질문 list 요청하는 api :: GET http://127.0.0.1:8000/teams/board/{team_pk}/questions/ '''
     @action(methods=['get'], detail=True,
             url_path='questions', url_name='join-questions',
             permission_classes=[IsAuthenticated])

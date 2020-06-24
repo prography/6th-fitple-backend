@@ -125,6 +125,7 @@ class ProfileView(RetrieveUpdateAPIView):
         }
         return Response(response, status=status.HTTP_200_OK)
 
+    ''' 프로필 update :: PUT http://127.0.0.1:8000/account/profile/{profile_pk}/ '''
     def update(self, request, *args, **kwargs):
         # user = request.user  # User.objects.filter(email=request.data['email']).first()
         serializer = self.get_serializer(instance=request.user, data=request.data)
