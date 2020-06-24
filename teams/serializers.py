@@ -4,11 +4,18 @@ from .models import Team, Comment
 
 
 class TeamListSerializer(serializers.ModelSerializer):
-    author = serializers.StringRelatedField()
+    author = serializers.SerializerMethodField()
 
     class Meta:
         model = Team
-        fields = ('author', 'id', 'title', 'description', 'image')
+        fields = ('author', 'id', 'title', 'description', 'region', 'image')
+
+    def get_author(self, obj):
+        return {
+            "id": obj.author.id,
+            "username": obj.author.username,
+            "image": obj.author.profile.image.url
+        }
 
 
 class TeamSerializer(serializers.ModelSerializer):
