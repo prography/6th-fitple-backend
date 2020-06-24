@@ -26,10 +26,7 @@ class TeamApplicationViewSet(viewsets.GenericViewSet):
     permission_classes = [IsAuthenticated, IsApplicationTeamLeader]
 
     # 승인/거절 api  # 팀 리더
-    '''
-    url : GET applications/{detail}/approve - refuse
-    '''
-
+    ''' 팀 리더가 신청 승인 :: GET http://127.0.0.1:8000/applications/{application_pk}/approve/ '''
     @action(methods=['get'], detail=True, url_path='approve',
             url_name='approve_application')
     def approve_application(self, request, *args, **kwargs):
@@ -52,6 +49,7 @@ class TeamApplicationViewSet(viewsets.GenericViewSet):
             return Response({"message": "ok"}, status=status.HTTP_200_OK)
         return Response({"message": "Application Status Error."}, status=status.HTTP_400_BAD_REQUEST)
 
+    ''' 팀리더가 신청 거부 :: GET http://127.0.0.1:8000/applications/{application_pk}/refuse/ '''
     @action(methods=['get'], detail=True, url_path='refuse',
             url_name='refuse_application')
     def refuse_application(self, request, *args, **kwargs):
