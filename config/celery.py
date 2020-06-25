@@ -11,8 +11,10 @@ else:
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.development")
 
 app = Celery('config',backend='redis://', broker='redis://localhost:6379/0')
+#app = Celery('config')
 app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
+
 
 @app.task(bind=True)
 def debug_task(self):

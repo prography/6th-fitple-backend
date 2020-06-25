@@ -8,7 +8,8 @@ from .models import User, Profile
 from teams.models import Team
 from applications.models import TeamApplication
 ## 테스트
-##from config.email import send_email
+from .task import def_email
+
 # 시간이 없어서 임시로 작업
 from config.settings.production import MEDIA_URL
 
@@ -64,7 +65,6 @@ def login(request):
 def userCheck(request):
     if request.method == 'POST':
         email = request.data['email']
-
         if User.objects.filter(email=email).first() is None:
             return Response({
                 "message": "register",
