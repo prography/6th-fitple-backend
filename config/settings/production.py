@@ -10,6 +10,11 @@ ALLOWED_HOSTS = ['*']
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
+# email setiing
+with open('env/etc/email.txt') as email:
+    EMAIL_HOST_USER = email.readline().strip()
+    EMAIL_HOST_PASSWORD = email.readline().strip()
+
 with open('env/etc/db.txt') as db_info:
     DATABASES = {
         'default': {
