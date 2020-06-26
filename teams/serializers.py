@@ -21,7 +21,7 @@ class TeamListSerializer(serializers.ModelSerializer):
 class TeamSerializer(serializers.ModelSerializer):
     author = serializers.SerializerMethodField()
     #author = serializers.CharField(read_only=True)  # read_only=True
-    # image = serializers.FileField(required=False)
+    image = serializers.FileField(required=False)
     # question = JoinQuestionsSerializer(write_only=True) # 팀 생성할 때만
 
     class Meta:

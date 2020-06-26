@@ -13,6 +13,7 @@ from applications.serializers import TeamApplicationSerializer, JoinQuestionSeri
 from .serializers import TeamSerializer, TeamListSerializer, CommentSerializer, TeamOnlyCommentSerializer
 from .models import Team, Comment
 from accounts.models import User, Profile
+from .task import def_email
 # 시간이 없어서 임시로 작업
 from config.settings.production import MEDIA_URL
 
@@ -148,9 +149,8 @@ class TeamViewSet(viewsets.ModelViewSet):
                 return Response({"message": "Request length Does Not Match."}, status=status.HTTP_400_BAD_REQUEST)
 
             # create Application
-            print('request.data["team"]', request.data['team'])
             application_serializer = TeamApplicationSerializer(data=request.data['team'])
-            print(application_serializer)
+
             application_serializer.is_valid(raise_exception=True)
             try:
                 team = Team.objects.get(pk=kwargs['pk'])
@@ -158,7 +158,6 @@ class TeamViewSet(viewsets.ModelViewSet):
                 return Response({"message": "Not found Team."}, status=status.HTTP_404_NOT_FOUND)
 
             application = application_serializer.save(team=team, applicant=request.user)
-
             # create JoinAnswers
             qna_list = []
             for qna in request.data['answers']:
@@ -189,10 +188,15 @@ class TeamViewSet(viewsets.ModelViewSet):
             # team = Team.objects.get(pk=kwargs['pk'])
             # 신청한 직무에 대해 초과 인원 뺄 필요가 당장은 없겠다 -- 의식의흐름... 일단 다 신청받기
             # serializer.save(team=team, applicant=request.user)
-
+            ##
+            team_data = Team.objects.filter(id=kwargs['pk']).values()
+            user_data = User.objects.filter(id=team_data[0]['author_id']).values()
+            email = user_data[0]['email']
+            def_email.delay(email)
+            # User.objects.filter
             response = {
                 # "message": f"'{self.request.user.username}' applies to Team: '{team.title}'"
-                "message": "ok"
+                "message": "ok",
             }
             headers = self.get_success_headers(application_serializer.data)
             return Response(response, status=status.HTTP_201_CREATED, headers=headers)
