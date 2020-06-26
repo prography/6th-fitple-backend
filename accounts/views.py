@@ -88,6 +88,15 @@ def getProfile(request, pk, format=None):
         return Response(profile)
 
 
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def test(request):
+    if request.method == "GET":
+        print("test")
+        def_email.delay()
+        return Response({"test": "test"})
+
+
 class ProfileView(RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated]
     # profile -- read/update 가 달랐던가 ? 예를 들어, 이메일을 수정 안하려면 다르겠지 !
