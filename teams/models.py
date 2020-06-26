@@ -45,6 +45,7 @@ class Team(models.Model):
         choices=ACTIVE_STATUS_CHOICES,
         default=RECRUITMENT_IN_PROGRESS
     )
+
     # recruitment_deadline = models.CharField(max_length=15, default='0000-00-00') #
 
     class Meta:
