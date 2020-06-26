@@ -121,6 +121,8 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PARSER_CLASSES': [
         'rest_framework.parsers.JSONParser',
+        'rest_framework.parsers.FormParser',
+        'rest_framework.parsers.MultiPartParser'
     ]
 }
 TEMPLATES = [
@@ -224,7 +226,8 @@ JWT_AUTH = {
 }
 
 BROKER_URL = 'redis://localhost:6379/0'
-CELERY_IMPORTS = ('config', 'config.tasks')
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+#CELERY_IMPORTS = ('config', 'config.tasks')
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
