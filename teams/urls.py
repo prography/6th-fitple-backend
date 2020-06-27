@@ -4,6 +4,7 @@ from teams import views
 
 
 router = DefaultRouter()
+router.register(r'image', views.ImageViewSet)
 router.register(r'board', views.TeamViewSet)
 router.register(r'comments', views.CommentViewSet)
 router.register(r'comment', views.CommentOnlyViewSet)
