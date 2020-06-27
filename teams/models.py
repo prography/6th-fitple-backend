@@ -4,13 +4,13 @@ from config.storage_backends import PublicMediaStorage
 from config.utils import s3_test_image_upload_to
 
 
-# Create your models here.
-## Tag는 나중에...
-# class Tag(models.Model):
-#     name = models.CharField(max_length=10, primary_key=True)
-#
-#     def __str__(self):
-#         return self.name
+## image test
+class Image(models.Model):
+    name = models.CharField("이름", max_length=50)
+    image = models.FileField('이미지',
+                             upload_to=s3_test_image_upload_to,
+                             storage=PublicMediaStorage(),
+                             default='default_team.jpg')
 
 
 class Team(models.Model):

@@ -1,6 +1,15 @@
 from rest_framework import serializers
 
-from .models import Team, Comment
+from .models import Team, Comment, Image
+
+
+## test
+class ImageSerializer(serializers.ModelSerializer):
+    image = serializers.FileField(required=False)
+
+    class Meta:
+        model = Image
+        fields = ('id', 'name', 'image')
 
 
 class TeamListSerializer(serializers.ModelSerializer):
