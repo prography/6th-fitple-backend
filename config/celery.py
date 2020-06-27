@@ -1,8 +1,6 @@
 from __future__ import absolute_import, unicode_literals
 import os
-from django.apps import apps
-from django.conf import settings
-import django
+
 from celery import Celery
 
 if('DJANGO_SETTINGS_MODULE' in os.environ) and (os.environ["DJANGO_SETTINGS_MODULE"] == "config.settings.production"):
@@ -11,7 +9,7 @@ else:
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.development")
 
 app = Celery('config',backend='redis://', broker='redis://localhost:6379/0')
-#app = Celery('config')
+
 app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
 
