@@ -3,24 +3,29 @@ from rest_framework import viewsets
 from rest_framework import status
 from rest_framework import permissions
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 
 from accounts.serializers import UserSimpleSerializer
 from applications.models import TeamApplication, JoinQuestion, JoinAnswer
 from applications.permissions import IsTeamLeader, IsOwner
 from applications.serializers import TeamApplicationSerializer, JoinQuestionSerializer, JoinAnswerSerializer
-from .serializers import TeamSerializer, TeamListSerializer, CommentSerializer, TeamOnlyCommentSerializer
-from .models import Team, Comment
+from .serializers import TeamSerializer, TeamListSerializer, CommentSerializer, TeamOnlyCommentSerializer, ImageSerializer
+from .models import Team, Comment, Image
 from accounts.models import User, Profile
 from .task import def_email
 # 시간이 없어서 임시로 작업
 from config.settings.production import MEDIA_URL
 
 
+# test
+class ImageViewSet(viewsets.ModelViewSet):
+    queryset = Image.objects.all()
+    serializer_class = ImageSerializer
+    permissions_classes = [permissions.AllowAny]
+
+
 # Create your views here.
-
-
 class TeamViewSet(viewsets.ModelViewSet):
     queryset = Team.objects.all()
     serializer_class = TeamSerializer
