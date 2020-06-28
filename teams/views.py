@@ -1,4 +1,5 @@
 from django.shortcuts import render
+import json
 from rest_framework import viewsets
 from rest_framework import status
 from rest_framework import permissions
@@ -44,7 +45,15 @@ class TeamViewSet(viewsets.ModelViewSet):
         # debug ok
         try:
             # create Team
-            team_serializer = self.get_serializer(data=request.data['team'])
+            team_data = request.data
+            questions_data = request.data["questions"]
+            if type(questions_data) is str:
+                print("check data")
+                questions_data = json.loads(questions_data)
+
+            team_data.pop("questions")
+            #team_serializer = self.get_serializer(data=request.data['team'])
+            team_serializer = self.get_serializer(data=team_data)
             team_serializer.is_valid(raise_exception=True)
             team = team_serializer.save(author=self.request.user)
             board_data = team_serializer.data
@@ -57,8 +66,9 @@ class TeamViewSet(viewsets.ModelViewSet):
             # question_serializer.save(team=team) # many=True 가 된다고 ?
 
             questions = []
-            for question in request.data['questions']:
+            for question in questions_data:
                 question_serializer = JoinQuestionSerializer(data=question)
+                print("check6")
                 question_serializer.is_valid(raise_exception=True)
                 question_serializer.save(team=team)  # question 에 team 주입
                 questions.append(question_serializer.validated_data)

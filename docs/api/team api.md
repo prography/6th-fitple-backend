@@ -40,14 +40,14 @@
   ``` json
   {
       "team": {
-  		"title": "팀리더 팀생성 테스트 final",
-  		"description": "팀리더 팀생성 테스트",
-  		"planner": 3,
-  		"developer": 3,
-  		"designer": 3,
-  		"region": "서울",
-  		"goal": "취직",
-  		"active_status": "모집진행중"
+        "title": "팀리더 팀생성 테스트 final",
+        "description": "팀리더 팀생성 테스트",
+        "planner": 3,
+        "developer": 3,
+        "designer": 3,
+        "region": "서울",
+        "goal": "취직",
+        "active_status": "모집진행중"
       },
   	"questions": [
           {"question": "시현질문11"},
