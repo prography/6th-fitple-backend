@@ -45,7 +45,7 @@ class TeamViewSet(viewsets.ModelViewSet):
         # debug ok
         try:
             # create Team
-            team_data = request.data
+            team_data = request.data.copy()
             questions_data = request.data["questions"]
             if type(questions_data) is str:
                 questions_data = json.loads(questions_data)
