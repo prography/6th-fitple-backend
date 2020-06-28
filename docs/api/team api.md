@@ -39,24 +39,19 @@
 
   ``` json
   {
-      "team": {
-        "title": "팀리더 팀생성 테스트 final",
+     		"title": "팀리더 팀생성 테스트 final",
         "description": "팀리더 팀생성 테스트",
         "planner": 3,
         "developer": 3,
         "designer": 3,
         "region": "서울",
         "goal": "취직",
-        "active_status": "모집진행중"
-      },
-  	"questions": [
-          {"question": "시현질문11"},
-          {"question": "시현질문22"},
-          {"question": "시현질문33"}
-      ]
+        "active_status": "모집진행중",
+    		"image": "이미지 위치",
+        "questions": [{"question": "시현질문11"},{"question": "시현질문12"},{"question": "시현질문13"}]
   }
   ```
-
+  
 - 응답: 응답에 성공하면 결과값을 JSON 형식으로 반환합니다.
 
 | 속성              | 타입   | 설명                 |
@@ -92,24 +87,19 @@
 
   ``` json
   {
-      "team": {
-  		"title": "팀리더 팀생성 테스트 final",
-  		"description": "팀리더 팀생성 테스트",
-  		"planner": 3,
-  		"developer": 3,
-  		"designer": 3,
-  		"region": "서울",
-  		"goal": "취직",
-  		"active_status": "모집진행중"
-      },
-  	"questions": [
-          {"question": "시현질문11"},
-          {"question": "시현질문22"},
-          {"question": "시현질문33"}
-      ]
+     		"title": "팀리더 팀생성 테스트 final",
+        "description": "팀리더 팀생성 테스트",
+        "planner": 3,
+        "developer": 3,
+        "designer": 3,
+        "region": "서울",
+        "goal": "취직",
+        "active_status": "모집진행중",
+    		"image": "이미지 위치",
+        "questions": [{"question": "시현질문11"},{"question": "시현질문12"},{"question": "시현질문13"}]
   }
   ```
-
+  
 - 요청 Headers
 
   ``` json
