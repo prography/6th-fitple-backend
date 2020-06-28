@@ -93,7 +93,7 @@ def getProfile(request, pk, format=None):
 def test(request):
     if request.method == "GET":
         print("test")
-        ##def_email.delay()
+        def_email.delay()
         return Response({"test": "test"})
 
 
