@@ -48,10 +48,12 @@ class TeamViewSet(viewsets.ModelViewSet):
             team_data = request.data
             questions_data = request.data["questions"]
             if type(questions_data) is str:
-                print("check data")
                 questions_data = json.loads(questions_data)
 
             team_data.pop("questions")
+            team_data['planner'] = int(team_data['planner'])
+            team_data['developer'] = int(team_data['developer'])
+            team_data['designer'] = int(team_data['designer'])
             #team_serializer = self.get_serializer(data=request.data['team'])
             team_serializer = self.get_serializer(data=team_data)
             team_serializer.is_valid(raise_exception=True)
@@ -68,7 +70,6 @@ class TeamViewSet(viewsets.ModelViewSet):
             questions = []
             for question in questions_data:
                 question_serializer = JoinQuestionSerializer(data=question)
-                print("check6")
                 question_serializer.is_valid(raise_exception=True)
                 question_serializer.save(team=team)  # question 에 team 주입
                 questions.append(question_serializer.validated_data)
