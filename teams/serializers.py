@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from accounts.serializers import UserSimpleSerializerVerTwo
 from .models import Team, Comment, Image
 
 
@@ -29,8 +30,9 @@ class TeamListSerializer(serializers.ModelSerializer):
 
 class TeamSerializer(serializers.ModelSerializer):
     author = serializers.SerializerMethodField()
-    #author = serializers.CharField(read_only=True)  # read_only=True
+    # author = serializers.CharField(read_only=True)  # read_only=True
     image = serializers.FileField(required=False)
+
     # question = JoinQuestionsSerializer(write_only=True) # 팀 생성할 때만
 
     class Meta:
@@ -48,7 +50,8 @@ class TeamSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     reply = serializers.SerializerMethodField()
-    user = serializers.CharField(read_only=True)
+    user = UserSimpleSerializerVerTwo(read_only=True)
+    # serializers.CharField(read_only=True)
 
     class Meta:
         model = Comment
