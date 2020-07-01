@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from accounts.serializers import UserSimpleSerializerVerTwo
 from .models import Team, Comment, Image
 
 
@@ -48,7 +49,8 @@ class TeamSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     reply = serializers.SerializerMethodField()
-    user = serializers.CharField(read_only=True)
+    user = UserSimpleSerializerVerTwo(read_only=True)
+        # serializers.CharField(read_only=True)
 
     class Meta:
         model = Comment
