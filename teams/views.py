@@ -45,15 +45,17 @@ class TeamViewSet(viewsets.ModelViewSet):
         # debug ok
         try:
             # create Team
-            team_data = request.data
+            team_data = request.data.copy()
             questions_data = request.data["questions"]
             if type(questions_data) is str:
                 questions_data = json.loads(questions_data)
 
             team_data.pop("questions")
-            team_data['planner'] = int(team_data['planner'])
-            team_data['developer'] = int(team_data['developer'])
-            team_data['designer'] = int(team_data['designer'])
+            # team_data['planner'] = int(team_data['planner'])
+            # print("sorry......")
+            # team_data['developer'] = int(team_data['developer'])
+            # print("sorry......")
+            # team_data['designer'] = int(team_data['designer'])
             #team_serializer = self.get_serializer(data=request.data['team'])
             team_serializer = self.get_serializer(data=team_data)
             team_serializer.is_valid(raise_exception=True)
@@ -129,6 +131,10 @@ class TeamViewSet(viewsets.ModelViewSet):
             "member": application_list,
         })
 
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response({"message": "ok"}, status=status.HTTP_204_NO_CONTENT)
     '''
     회원이 팀원 신청하는 api :: POST http://127.0.0.1:8000/teams/board/{team_pk}/applications/
     팀 리더가 신청 list 요청하는 api :: GET http://127.0.0.1:8000/teams/board/{team_pk}/applications/
