@@ -10,6 +10,8 @@
 
 [Team Detail 조회](####Team Detail 조회)
 
+[Team Delete](####Team Delete)
+
 [댓글 작성](#### 댓글 작성)
 
 [댓글 view](#### 댓글 view)
@@ -313,6 +315,12 @@ http://fitple-dev.ap-northeast-2.elasticbeanstalk.com/teams/board/
   
 
 -------
+
+#### Team Delete
+
+- 설명
+
+
 
 
 
