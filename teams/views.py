@@ -51,9 +51,11 @@ class TeamViewSet(viewsets.ModelViewSet):
                 questions_data = json.loads(questions_data)
 
             team_data.pop("questions")
-            team_data['planner'] = int(team_data['planner'])
-            team_data['developer'] = int(team_data['developer'])
-            team_data['designer'] = int(team_data['designer'])
+            # team_data['planner'] = int(team_data['planner'])
+            # print("sorry......")
+            # team_data['developer'] = int(team_data['developer'])
+            # print("sorry......")
+            # team_data['designer'] = int(team_data['designer'])
             #team_serializer = self.get_serializer(data=request.data['team'])
             team_serializer = self.get_serializer(data=team_data)
             team_serializer.is_valid(raise_exception=True)
@@ -91,7 +93,6 @@ class TeamViewSet(viewsets.ModelViewSet):
         ).filter(  # 승인된 상태
             join_status=TeamApplication.APPROVED
         ).values('applicant__id', 'applicant__username', 'applicant__profile__image', 'job')  # dict
-        print('values', applicants, type(applicants))  # type: QuerySet
         application_list = []
         for application in applicants:
             team_member = UserSimpleSerializer(
@@ -101,8 +102,7 @@ class TeamViewSet(viewsets.ModelViewSet):
             team_member_data['image'] = MEDIA_URL + team_member.data['image']
             team_member_data['job'] = application['job']
             application_list.append(team_member_data)
-        # application_serializer = TeamApplicationSerializer(instance=applications, many=True)
-        # print(application_serializer.data)
+
 
         app_list = []
         for app in applicants:
@@ -115,20 +115,29 @@ class TeamViewSet(viewsets.ModelViewSet):
         # applicants_user = [apc.applicant for apc in applications]
 
         instance = self.get_object()
-        print(instance)
         serializer = self.get_serializer(instance)
+        permission = IsTeamLeader().has_object_permission(self.request, self, instance)
+
         author = serializer.data["author"]
         board_data = serializer.data
         board_data["author"] = serializer.data["author"]['username']
 
         return Response({
             "board": board_data,
-            "author": serializer.data['author']['username'],
+            "author": permission,
             "application": app_boolean,
             "leader": author,
             "member": application_list,
         })
 
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        permission = IsTeamLeader().has_object_permission(self.request, self, instance)
+        if permission:
+            self.perform_destroy(instance)
+            return Response({"message": "ok"}, status=status.HTTP_204_NO_CONTENT)
+        return Response({"message": "Account mismatch"}, status=status.HTTP_403_FORBIDDEN)
     '''
     회원이 팀원 신청하는 api :: POST http://127.0.0.1:8000/teams/board/{team_pk}/applications/
     팀 리더가 신청 list 요청하는 api :: GET http://127.0.0.1:8000/teams/board/{team_pk}/applications/
