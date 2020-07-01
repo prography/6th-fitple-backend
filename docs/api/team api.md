@@ -10,6 +10,8 @@
 
 [Team Detail 조회](####Team Detail 조회)
 
+[Team Delete](####Team Delete)
+
 [댓글 작성](#### 댓글 작성)
 
 [댓글 view](#### 댓글 view)
@@ -303,6 +305,39 @@ http://fitple-dev.ap-northeast-2.elasticbeanstalk.com/teams/board/
   
 
 -------
+
+#### Team Delete
+
+- 설명: Team 삭제 api
+- 요청 URL
+  - Test URL: localhost:8000/team/board/{id}/
+  - 서비스 URL: http://api.fit-ple.com/team/board/{id}/
+- HTTP 메서드: DELETE
+- 요청 Headers
+
+``` json
+{
+		Authorization: `Bearer ${token}`
+}
+```
+
+- 응답(성공시)
+
+``` json
+{
+    "message": "ok"
+}
+```
+
+- 응답(실패시)
+
+``` json
+{
+    "message": "Account mismatch"
+}
+```
+
+
 
 
 
