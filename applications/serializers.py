@@ -54,5 +54,22 @@ class JoinAnswerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = JoinAnswer
-        fields = ['answer', 'question'] #'question',
-        
+        fields = ['answer', 'question']  # 'question',
+
+
+class TeamApplicationListSerializer(serializers.ModelSerializer):
+    # team = TeamSerializer(read_only=True)  # read_only=True :: id 만 전달해도 되나 ?
+    # 질문/대답도 같이 반환해야 하는데!
+    applicant = UserSimpleSerializerVerTwo(read_only=True)
+    answers = serializers.SerializerMethodField()
+
+    class Meta:
+        model = TeamApplication
+        fields = ['id', 'applicant', 'join_status', 'job', 'created_at', 'answers']  # 'team',
+        read_only_fields = ['id', 'applicant', 'join_status', 'created_at']  # 'team', 이렇게 하면 team 빠지나 ? oo
+
+    def get_answers(self, obj):
+        # result = []
+        serializer = JoinAnswerSerializer(instance=obj.answers.all(), many=True)
+        print('get_answers', serializer.data)#obj.answers.all())
+        return serializer.data

@@ -10,8 +10,10 @@ from rest_framework.response import Response
 from accounts.serializers import UserSimpleSerializer
 from applications.models import TeamApplication, JoinQuestion, JoinAnswer
 from applications.permissions import IsTeamLeader, IsOwner
-from applications.serializers import TeamApplicationSerializer, JoinQuestionSerializer, JoinAnswerSerializer
-from .serializers import TeamSerializer, TeamListSerializer, CommentSerializer, TeamOnlyCommentSerializer, ImageSerializer
+from applications.serializers import TeamApplicationSerializer, JoinQuestionSerializer, JoinAnswerSerializer, \
+    TeamApplicationListSerializer
+from .serializers import TeamSerializer, TeamListSerializer, CommentSerializer, TeamOnlyCommentSerializer, \
+    ImageSerializer
 from .models import Team, Comment, Image
 from accounts.models import User, Profile
 from .task import def_email
@@ -41,6 +43,7 @@ class TeamViewSet(viewsets.ModelViewSet):
     #     serializer.save(author=self.request.user)
 
     ''' 팀 리더가 팀 생성하는 api :: POST http://127.0.0.1:8000/teams/board/ '''
+
     def create(self, request, *args, **kwargs):
         # debug ok
         try:
@@ -56,7 +59,7 @@ class TeamViewSet(viewsets.ModelViewSet):
             # team_data['developer'] = int(team_data['developer'])
             # print("sorry......")
             # team_data['designer'] = int(team_data['designer'])
-            #team_serializer = self.get_serializer(data=request.data['team'])
+            # team_serializer = self.get_serializer(data=request.data['team'])
             team_serializer = self.get_serializer(data=team_data)
             team_serializer.is_valid(raise_exception=True)
             team = team_serializer.save(author=self.request.user)
@@ -103,7 +106,6 @@ class TeamViewSet(viewsets.ModelViewSet):
             team_member_data['job'] = application['job']
             application_list.append(team_member_data)
 
-
         app_list = []
         for app in applicants:
             app_list.append(app['applicant__username'])
@@ -138,10 +140,12 @@ class TeamViewSet(viewsets.ModelViewSet):
             self.perform_destroy(instance)
             return Response({"message": "ok"}, status=status.HTTP_204_NO_CONTENT)
         return Response({"message": "Account mismatch"}, status=status.HTTP_403_FORBIDDEN)
+
     '''
     회원이 팀원 신청하는 api :: POST http://127.0.0.1:8000/teams/board/{team_pk}/applications/
     팀 리더가 신청 list 요청하는 api :: GET http://127.0.0.1:8000/teams/board/{team_pk}/applications/
     '''
+
     # 일단 다 가져오고 각각 커스텀 할 부분 생각하기
     @action(methods=['post', 'get'], detail=True,
             url_path='applications', url_name='about_applications',
@@ -198,22 +202,7 @@ class TeamViewSet(viewsets.ModelViewSet):
                 answer_serializer.save(application=application, question=question)
 
                 qna_list.append(answer_serializer.validated_data)
-            # --
-            #             answer_serializer = JoinAnswerSerializer(data=request.data['answers'])
-            #             answer_serializer.is_valid(raise_exception=True)
-            #             # team = Team.objects.get(pk=kwargs['pk'])
-            #             # team = team_serializer.save(author=self.request.user)
-            #             answer_serializer.save(application=application)
 
-            # serializer = TeamApplicationSerializer(data=request.data)
-            # team 은 kwargs 에서 구분하고
-            # 작성자는 request.user
-            # 당장은 직무만 선택하는 로직 작성하자! -- 다른건 동작 확인하고 계획하자! -- 다른거래봤자 질문인데 3개만 제한해서 작성하기로 하자 -- 3개이하
-            # serializer.is_valid(raise_exception=True)
-            # team = Team.objects.get(pk=kwargs['pk'])
-            # 신청한 직무에 대해 초과 인원 뺄 필요가 당장은 없겠다 -- 의식의흐름... 일단 다 신청받기
-            # serializer.save(team=team, applicant=request.user)
-            ##
             team_data = Team.objects.filter(id=kwargs['pk']).values()
             user_data = User.objects.filter(id=team_data[0]['author_id']).values()
             email = user_data[0]['email']
@@ -245,13 +234,13 @@ class TeamViewSet(viewsets.ModelViewSet):
             # 해당 팀에 관련된 신청 정보만 전달 !
             # 지원자가 취소한 데이터는 보여주지 말것
 
-            queryset = TeamApplication.objects.filter(  # 해당 팀의 신청 정보를 먼저 가져오고
+            application_queryset = TeamApplication.objects.filter(  # 해당 팀의 신청 정보를 먼저 가져오고
                 team__id=kwargs['pk']
             ).exclude(  # 지원자가 취소한 신청 정보 필터링하기
                 join_status=TeamApplication.CANCELED
             )
 
-            application = queryset.first()
+            application = application_queryset.first()
             if application is None:  # -- 퍼미션 검사하면서 None 객체에 접근하는 참사를 막기 위해 ?
                 return Response({"message": "No results."}, status=status.HTTP_200_OK)
 
@@ -260,18 +249,22 @@ class TeamViewSet(viewsets.ModelViewSet):
                 # 팀 객체 퍼미션 확인하기 -- 팀 리더가 요청했을 때만 신청 list 반환하려고
                 return Response({"message": "Request Permission Error."}, status=status.HTTP_403_FORBIDDEN)
 
-            serializer = TeamApplicationSerializer(instance=queryset, many=True)
+            application_list_serializer = TeamApplicationListSerializer(instance=application_queryset, many=True)
             team_serializer = TeamSerializer(instance=application.team)
+
+            question_serializer = JoinQuestionSerializer(instance=application.team.questions.all(), many=True)
 
             response = {
                 'team': team_serializer.data['id'],
-                'applications': serializer.data
+                'team_questions': question_serializer.data,
+                'applications': application_list_serializer.data
             }
             return Response(response, status=status.HTTP_200_OK)
 
         return Response({"message": "method not allowed."}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     ''' 팀에 신청한 정보(직무+답변) 요청하는 api :: GET http://127.0.0.1:8000/teams/board/{team_pk}/applications/{application_pk}/ '''
+
     @action(methods=['get', 'put'], detail=True, url_path='applications/(?P<application_id>\d+)',
             url_name='detail_applications', permission_classes=[IsAuthenticated])
     def retrieve_update_cancel_application(self, request, *args, **kwargs):  # 인증된 사용자
@@ -369,6 +362,7 @@ class TeamViewSet(viewsets.ModelViewSet):
         return Response({"message": "method not allowed."}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     ''' 팀에 신청한 회원이 신청 취소하는 api :: DELETE http://127.0.0.1:8000/teams/board/{team_pk}/applications/cancel/ '''
+
     @action(methods=['delete'], detail=True, url_path='applications/cancel',
             url_name='detail_applications', permission_classes=[IsOwner])
     def cancel_application(self, request, *args, **kwargs):  # 팀 신청한 사용자
@@ -391,6 +385,7 @@ class TeamViewSet(viewsets.ModelViewSet):
         return Response({"message": "ok"}, status=status.HTTP_200_OK)
 
     ''' 팀의 질문 list 요청하는 api :: GET http://127.0.0.1:8000/teams/board/{team_pk}/questions/ '''
+
     @action(methods=['get'], detail=True,
             url_path='questions', url_name='join-questions',
             permission_classes=[IsAuthenticated])

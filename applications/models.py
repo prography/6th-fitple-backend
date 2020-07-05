@@ -39,13 +39,14 @@ class TeamApplication(models.Model):
 
 
 class JoinQuestion(models.Model):
-    team = models.ForeignKey(Team, on_delete=models.CASCADE)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='questions')
+    # team 에서 여기 접근할 때 questions 이름으로 ?
 
     question = models.TextField()
 
 
 class JoinAnswer(models.Model):
-    application = models.ForeignKey(TeamApplication, on_delete=models.CASCADE)
+    application = models.ForeignKey(TeamApplication, on_delete=models.CASCADE, related_name='answers')
     question = models.ForeignKey(JoinQuestion, on_delete=models.CASCADE)
 
     answer = models.TextField()
