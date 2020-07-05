@@ -118,23 +118,76 @@ Base_Url: http://fitple-deploy-dev.ap-northeast-2.elasticbeanstalk.com/
 
   - ```json
     {
-        "team": 2, // 팀id
-        "applications": [ // 신청 list
+        "team": 25,
+        "team_questions": [
             {
-                "id": 11, // 신청 id
-                "applicant": { // 지원자 간단 정보
-                    "id": 5, // 지원자 id
-                    "username": "sisi-apply", // username
-                    "image": "https://fitple-access-s3-test.s3-ap-northeast-2.amazonaws.com/media/default_user.png" // image
+                "id": 10,
+                "question": "시현질문11"
+            },
+            {
+                "id": 11,
+                "question": "시현질문12"
+            },
+            {
+                "id": 12,
+                "question": "시현질문13"
+            }
+        ],
+        "applications": [
+          {
+                "id": 29,
+                "applicant": {
+                    "id": 8,
+                    "username": "sisi-member",
+                    "image": "https://fitple-access-s3-test.s3-ap-northeast-2.amazonaws.com/media/default_user.png"
                 },
-                "join_status": "Waiting", // 신청 상태
-                "job": "Planner", // 신청 직무
-                "created_at": "2020-06-02" // 신청일
+                "join_status": "Waiting",
+                "job": "Developer",
+                "created_at": "2020-07-04",
+                "answers": [
+                    {
+                        "answer": "...대답1",
+                        "question": 10
+                    },
+                    {
+                        "answer": "...대답2",
+                        "question": 11
+                    },
+                    {
+                        "answer": "...대답3",
+                        "question": 12
+                    }
+                ]
+            },
+            {
+                "id": 30,
+                "applicant": {
+                    "id": 9,
+                    "username": "sisi-member22",
+                    "image": "https://fitple-access-s3-test.s3-ap-northeast-2.amazonaws.com/media/default_user.png"
+                },
+                "join_status": "Waiting",
+                "job": "Developer",
+                "created_at": "2020-07-04",
+                "answers": [
+                    {
+                        "answer": "...22대답1",
+                        "question": 10
+                    },
+                    {
+                        "answer": "...22대답2",
+                        "question": 11
+                    },
+                    {
+                        "answer": "...22대답3",
+                        "question": 12
+                    }
+                ]
             }
         ]
     }
     ```
-
+  
   
 
 ## 신청 retrieve api
