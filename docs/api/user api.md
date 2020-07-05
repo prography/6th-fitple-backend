@@ -149,18 +149,10 @@
                 "title": "팀리더 팀생성 테스트 final",
                 "image": "default_team.jpg"
             }
-        ],
-        "myApplication": [
-            {
-                "id": 4,
-                "team_id": 2,
-                "join_status": "Waiting",
-                "job": "Developer"
-            }
         ]
     }
     ```
-
+  
 - ###### PUT
 
   - ###### request
@@ -188,6 +180,32 @@
     ```
 
 
+
+#### 프로필 application list
+
+- account/profile/application/ -- Token 필요한 API
+
+- GET
+
+  - response
+
+  ``` json
+  {
+      "myApplication": [
+          {
+              "id": 29,
+              "team_id": 52,
+              "title": "팀리더 팀생성 테스트 final2",
+              "description": "팀리더 팀생성 테스트",
+              "image": "https://fitple-access-s3-test.s3-ap-northeast-2.amazonaws.com/media/default_team.jpg",
+              "join_status": "Waiting",
+              "job": "Developer"
+          }
+      ]
+  }
+  ```
+
+  
 
 #### 프로필 read(인증 불필요)
 

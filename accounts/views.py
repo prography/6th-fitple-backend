@@ -1,7 +1,7 @@
 from rest_framework import status
 from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes, parser_classes
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from .serializers import UserCreateSerializer, UserLoginSerializer, ProfilePageSerializer
 from .models import User, Profile
@@ -93,8 +93,37 @@ def getProfile(request, pk, format=None):
 def test(request):
     if request.method == "GET":
         print("test")
-        ##def_email.delay()
+        def_email.delay()
         return Response({"test": "test"})
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def application(request):
+    if request.method == "GET":
+        user = request.user
+        applications = TeamApplication.objects.filter(applicant=user).values()
+        my_application_list = []
+
+        for j in applications:
+            team = Team.objects.get(id=j["team_id"])
+            title = team.title
+            description = team.description
+            team_image = str(team.image)
+            image = MEDIA_URL + team_image
+            my_application_list.append({
+                "id": j["id"],
+                "team_id": j["team_id"],
+                "title": title,
+                "description": description,
+                "image": image,
+                "join_status": j["join_status"],
+                "job": j["job"]
+            })
+        response = {
+            'myApplication': my_application_list
+        }
+        return Response(response, status=status.HTTP_200_OK)
 
 
 class ProfileView(RetrieveUpdateAPIView):
@@ -109,16 +138,10 @@ class ProfileView(RetrieveUpdateAPIView):
         user = request.user
         profile = Profile.objects.get(user=user)
         team = Team.objects.filter(author=user).values()
-        applications = TeamApplication.objects.filter(applicant=user).values()
-
         my_team_list = []
-        my_application_list = []
 
         for i in team:
-            my_team_list.append({"id": i["id"], "title": i["title"], "image": i["image"]})
-
-        for j in applications:
-            my_application_list.append({"id": j["id"], "team_id": j["team_id"], "join_status": j["join_status"], "job": j["job"]})
+            my_team_list.append({"id": i["id"], "title": i["title"], "image": MEDIA_URL+i["image"]})
 
         response = {
             'success': 'True',
@@ -129,10 +152,10 @@ class ProfileView(RetrieveUpdateAPIView):
                 'email': user.email,
                 'image': profile.image.url
             },
-            'myTeam': my_team_list,
-            "myApplication": my_application_list
+            'myTeam': my_team_list
         }
         return Response(response, status=status.HTTP_200_OK)
+
 
     ''' 프로필 update :: PUT http://127.0.0.1:8000/account/profile/{profile_pk}/ '''
     def update(self, request, *args, **kwargs):

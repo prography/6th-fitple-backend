@@ -10,6 +10,8 @@
 
 [Team Detail 조회](####Team Detail 조회)
 
+[Team Delete](####Team Delete)
+
 [댓글 작성](#### 댓글 작성)
 
 [댓글 view](#### 댓글 view)
@@ -39,24 +41,19 @@
 
   ``` json
   {
-      "team": {
-  		"title": "팀리더 팀생성 테스트 final",
-  		"description": "팀리더 팀생성 테스트",
-  		"planner": 3,
-  		"developer": 3,
-  		"designer": 3,
-  		"region": "서울",
-  		"goal": "취직",
-  		"active_status": "모집진행중"
-      },
-  	"questions": [
-          {"question": "시현질문11"},
-          {"question": "시현질문22"},
-          {"question": "시현질문33"}
-      ]
+     		"title": "팀리더 팀생성 테스트 final",
+        "description": "팀리더 팀생성 테스트",
+        "planner": 3,
+        "developer": 3,
+        "designer": 3,
+        "region": "서울",
+        "goal": "취직",
+        "active_status": "모집진행중",
+    		"image": "이미지 위치",
+        "questions": [{"question": "시현질문11"},{"question": "시현질문12"},{"question": "시현질문13"}]
   }
   ```
-
+  
 - 응답: 응답에 성공하면 결과값을 JSON 형식으로 반환합니다.
 
 | 속성              | 타입   | 설명                 |
@@ -92,24 +89,19 @@
 
   ``` json
   {
-      "team": {
-  		"title": "팀리더 팀생성 테스트 final",
-  		"description": "팀리더 팀생성 테스트",
-  		"planner": 3,
-  		"developer": 3,
-  		"designer": 3,
-  		"region": "서울",
-  		"goal": "취직",
-  		"active_status": "모집진행중"
-      },
-  	"questions": [
-          {"question": "시현질문11"},
-          {"question": "시현질문22"},
-          {"question": "시현질문33"}
-      ]
+     		"title": "팀리더 팀생성 테스트 final",
+        "description": "팀리더 팀생성 테스트",
+        "planner": 3,
+        "developer": 3,
+        "designer": 3,
+        "region": "서울",
+        "goal": "취직",
+        "active_status": "모집진행중",
+    		"image": "이미지 위치",
+        "questions": [{"question": "시현질문11"},{"question": "시현질문12"},{"question": "시현질문13"}]
   }
   ```
-
+  
 - 요청 Headers
 
   ``` json
@@ -313,6 +305,39 @@ http://fitple-dev.ap-northeast-2.elasticbeanstalk.com/teams/board/
   
 
 -------
+
+#### Team Delete
+
+- 설명: Team 삭제 api
+- 요청 URL
+  - Test URL: localhost:8000/team/board/{id}/
+  - 서비스 URL: http://api.fit-ple.com/team/board/{id}/
+- HTTP 메서드: DELETE
+- 요청 Headers
+
+``` json
+{
+		Authorization: `Bearer ${token}`
+}
+```
+
+- 응답(성공시)
+
+``` json
+{
+    "message": "ok"
+}
+```
+
+- 응답(실패시)
+
+``` json
+{
+    "message": "Account mismatch"
+}
+```
+
+
 
 
 
