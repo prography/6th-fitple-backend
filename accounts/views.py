@@ -150,6 +150,7 @@ class ProfileView(RetrieveUpdateAPIView):
                 'livingArea': profile.livingArea,
                 'phone': profile.phone,
                 'email': user.email,
+                'introduce': profile.introduce,
                 'image': profile.image.url
             },
             'myTeam': my_team_list
