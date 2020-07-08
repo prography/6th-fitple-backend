@@ -111,6 +111,9 @@ class Profile(models.Model):
         max_length=16,
         null=True, blank=True
     )
+    introduce = models.TextField(
+        null=True, blank=True
+    )
     image = models.FileField('이미지',
                              upload_to=s3_test_image_upload_to,
                              storage=PublicMediaStorage(),
