@@ -97,7 +97,7 @@ with open(os.path.join(BASE_DIR, 'env/etc/s3.txt')) as f:
 
     AWS_DEFAULT_ACL = 'public-read'
     # AWS_LOCATION = 'static' # 일단 media - image 부분만!
-    AWS_MEDIA_LOCATION = 'media'
+    AWS_MEDIA_LOCATION = 'media/public'
 
     # STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
     MEDIA_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_MEDIA_LOCATION)
