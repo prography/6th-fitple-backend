@@ -8,6 +8,7 @@
 - [프로필 READ/Update API](####프로필 READ/Update API)
 - [프로필 read(인증 불필요)](####프로필 read(인증 불필요))
 - [프로필 application list](####프로필 application list)
+- [프로필 myTeam list](####프로필 myTeam list)
 
 
 
@@ -142,14 +143,7 @@
             "phone": null,
             "email": "lemontech119@gmail.com",
             "image": "https://fitple-access-s3-test.s3-ap-northeast-2.amazonaws.com/media/public/default_user.png"
-        },
-        "myTeam": [
-            {
-                "id": 3,
-                "title": "팀리더 팀생성 테스트 final",
-                "image": "default_team.jpg"
-            }
-        ]
+        }
     }
     ```
   
@@ -205,7 +199,32 @@
   }
   ```
 
-  
+
+
+#### 프로필 myTeam list
+
+- account/profile/team/ -- Token 필요한 API
+
+- GET
+
+  - response
+
+  ``` json
+  {
+      "myTeam": [
+          {
+              "team_id": 85,
+              "title": "ww-e",
+              "description": "test2",
+              "created_at": "2020-07-05T11:54:40.542609Z",
+              "image": "https://fitple-access-s3-test.s3-ap-northeast-2.amazonaws.com/media/2020/07/05/11/54/40441c7789434eb0b2fbb09ee84122e7.jpeg"
+          }
+      ]
+  }
+  ```
+
+
+
 
 #### 프로필 read(인증 불필요)
 

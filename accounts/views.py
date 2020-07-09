@@ -126,6 +126,30 @@ def application(request):
         return Response(response, status=status.HTTP_200_OK)
 
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def myTeam(request):
+    if request.method == "GET":
+        user = request.user
+        team = Team.objects.filter(author=user).values()
+        print(team[0])
+        my_team_list = []
+
+        for i in team:
+            my_team_list.append({
+                "team_id": i["id"],
+                "title": i["title"],
+                "description": i["description"],
+                "created_at": i["created_at"],
+                "image": MEDIA_URL + i["image"]
+            })
+
+        response = {
+            'myTeam': my_team_list
+        }
+        return Response(response, status=status.HTTP_200_OK)
+
+
 class ProfileView(RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated]
     # profile -- read/update 가 달랐던가 ? 예를 들어, 이메일을 수정 안하려면 다르겠지 !
@@ -137,11 +161,6 @@ class ProfileView(RetrieveUpdateAPIView):
         # print('뷰 함수')
         user = request.user
         profile = Profile.objects.get(user=user)
-        team = Team.objects.filter(author=user).values()
-        my_team_list = []
-
-        for i in team:
-            my_team_list.append({"id": i["id"], "title": i["title"], "image": MEDIA_URL+i["image"]})
 
         response = {
             'success': 'True',
@@ -152,8 +171,7 @@ class ProfileView(RetrieveUpdateAPIView):
                 'email': user.email,
                 'introduce': profile.introduce,
                 'image': profile.image.url
-            },
-            'myTeam': my_team_list
+            }
         }
         return Response(response, status=status.HTTP_200_OK)
 

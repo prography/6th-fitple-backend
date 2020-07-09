@@ -8,5 +8,6 @@ urlpatterns = [
     path('user/profile/<int:pk>/', views.getProfile),
     path('profile/', views.ProfileView.as_view()),
     path('profile/application/', views.application),
+    path('profile/team/', views.myTeam),
     path('test/', views.test) # celery email test
 ]
