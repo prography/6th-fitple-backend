@@ -407,6 +407,41 @@ class TeamViewSet(viewsets.ModelViewSet):
         #
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    # in-activity end-of-activity
+    @action(methods=['get'], detail=True,
+            url_path='status/in-activity', url_name='join-status-in-activity')  # IsTeamLeader
+    def change_status_in_activity(self, request, *args, **kwargs):
+        team = self.get_object()
+
+        leader_permission = IsTeamLeader().has_object_permission(self.request, self, team)
+        if leader_permission is False:
+            return Response({"message": "Request Permission Error."}, status=status.HTTP_403_FORBIDDEN)
+
+        if team.active_status != Team.RECRUITMENT_IN_PROGRESS:
+            return Response({"message": "Request Status Error."}, status=status.HTTP_400_BAD_REQUEST)
+
+        team.active_status = Team.IN_ACTIVITY
+        team.save()
+        # serializer = TeamSerializer(instance=team)
+        return Response({'message': 'ok'}, status=status.HTTP_200_OK)
+
+    @action(methods=['get'], detail=True,
+            url_path='status/end-of-activity', url_name='join-status-end-of-activity')  # IsTeamLeader
+    def change_status_end_of_activity(self, request, *args, **kwargs):
+        team = self.get_object()
+
+        leader_permission = IsTeamLeader().has_object_permission(self.request, self, team)
+        if leader_permission is False:
+            return Response({"message": "Request Permission Error."}, status=status.HTTP_403_FORBIDDEN)
+
+        if team.active_status != Team.IN_ACTIVITY:
+            return Response({"message": "Request Status Error."}, status=status.HTTP_400_BAD_REQUEST)
+
+        team.active_status = Team.END_OF_ACTIVITY
+        team.save()
+        # serializer = TeamSerializer(instance=team)
+        return Response({'message': 'ok'}, status=status.HTTP_200_OK)
+
 
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
