@@ -16,6 +16,8 @@
 
 [댓글 view](#### 댓글 view)
 
+[Team Status 변경](####Team Status 변경)
+
 --------
 
 #### Team 생성
@@ -510,3 +512,38 @@ http://fitple-dev.ap-northeast-2.elasticbeanstalk.com/teams/comment/24/
 }
 ```
 
+
+
+#### Team Status 변경
+
+- 팀 상태를 변경하는 api 
+  1. default 모집중에서 > 활동중 (==모집마감)
+  2. 활동중에서 > 활동 종료
+- url : GET
+  - BASE_URL + /teams/board/{team_pk}/status/in-activity/
+  - BASE_URL + /teams/board/{team_pk}/status/end-of-activity/
+
+- response
+
+  - 팀 리더만 상태를 변경할 수 있음
+
+    - ```json
+      // 팀 리더가 아닐 경우
+      {"message": "Request Permission Error."}
+      ```
+
+  - 상태 라이프 사이클 벗어나는 경우
+
+    - 모집중 > 활동중 , 활동중 > 활동종료
+
+    - ```json
+      {"message": "Request Status Error."}
+      ```
+
+  - 정상응답
+
+    - ```json
+      {'message': 'ok'}
+      ```
+
+    

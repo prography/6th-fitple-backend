@@ -26,6 +26,7 @@ urlpatterns = [
     path('account/', include('accounts.urls')),
     path('teams/', include('teams.urls')),
     path('applications/', include('applications.urls')),
+    path('feedback/', include('feedback.urls')),
 ]
 
 # 개발서버에서 미디어 파일 서빙

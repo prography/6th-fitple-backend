@@ -36,7 +36,7 @@ class Team(models.Model):
     RECRUITMENT_IN_PROGRESS, RECRUITMENT_DEADLINE, IN_ACTIVITY, END_OF_ACTIVITY = '모집진행중', '모집마감', '활동중', '활동종료'
     ACTIVE_STATUS_CHOICES = [
         (RECRUITMENT_IN_PROGRESS, '모집진행중'),
-        (RECRUITMENT_DEADLINE, '모집마감'),
+        # (RECRUITMENT_DEADLINE, '모집마감'),
         (IN_ACTIVITY, '활동중'),
         (END_OF_ACTIVITY, '활동종료'),
     ]
