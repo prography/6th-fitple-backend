@@ -118,4 +118,5 @@ class Profile(models.Model):
                              upload_to=s3_test_image_upload_to,
                              storage=PublicMediaStorage(),
                              default='default_user.png')
+    email_subscribe = models.BooleanField(default=True)
 

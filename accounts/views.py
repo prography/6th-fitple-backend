@@ -1,8 +1,10 @@
-from rest_framework import status
+from rest_framework import status, permissions
 from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.viewsets import GenericViewSet
+
 from .serializers import UserCreateSerializer, UserLoginSerializer, ProfilePageSerializer
 from .models import User, Profile
 from teams.models import Team
@@ -83,7 +85,7 @@ def getProfile(request, pk, format=None):
         profile = Profile.objects.filter(user=pk).values()[0]
         username = User.objects.filter(id=pk).values()[0]
         profile["username"] = username["username"]
-        profile["image"] = MEDIA_URL+profile["image"]
+        profile["image"] = MEDIA_URL + profile["image"]
 
         return Response(profile)
 
@@ -132,7 +134,8 @@ def myTeam(request):
     if request.method == "GET":
         user = request.user
         team = Team.objects.filter(author=user).values()
-        print(team[0])
+        if len(team) != 0:
+            print(team[0])
         my_team_list = []
 
         for i in team:
@@ -170,13 +173,14 @@ class ProfileView(RetrieveUpdateAPIView):
                 'phone': profile.phone,
                 'email': user.email,
                 'introduce': profile.introduce,
-                'image': profile.image.url
+                'image': profile.image.url,
+                'email_subscribe': profile.email_subscribe
             }
         }
         return Response(response, status=status.HTTP_200_OK)
 
-
     ''' 프로필 update :: PUT http://127.0.0.1:8000/account/profile/{profile_pk}/ '''
+
     def update(self, request, *args, **kwargs):
         # user = request.user  # User.objects.filter(email=request.data['email']).first()
         serializer = self.get_serializer(instance=request.user, data=request.data)
@@ -190,4 +194,51 @@ class ProfileView(RetrieveUpdateAPIView):
         return Response({"message": "ok."}, status=status.HTTP_200_OK)  #
         # 아니면 return Fail
 
+
 # User + Profile : 합쳐 전달하는 get api 필요할까 ?
+
+class EmailSubscriptionViewSet(GenericViewSet):
+    # queryset = Team.objects.all()
+    # serializer_class = TeamSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    @action(methods=['get'], detail=False,
+            url_path='subscribe', url_name='email-subscribe')  # IsTeamLeader
+    def subscribe_to_email(self, request, *args, **kwargs):
+        # request.user 를 통해 Profile 가져오기
+        try:
+            profile = Profile.objects.get(user=request.user)
+        except:
+            return Response({"message": "Not Found."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Profile 상태 변경하고 저장
+
+        # 이미 구독중이라면
+        if profile.email_subscribe:
+            return Response({"message": "Already Subscribed."}, status=status.HTTP_400_BAD_REQUEST)
+
+        profile.email_subscribe = True
+        profile.save()
+
+        return Response({"message": "ok."}, status=status.HTTP_200_OK)
+
+    @action(methods=['get'], detail=False,
+            url_path='unsubscribe', url_name='email-unsubscribe')  # IsTeamLeader
+    def unsubscribe_to_email(self, request, *args, **kwargs):
+        print('sisi')
+        # request.user 를 통해 Profile 가져오기
+        try:
+            profile = Profile.objects.get(user=request.user)
+        except:
+            return Response({"message": "Not Found."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Profile 상태 변경하고 저장
+
+        # 이미 구독취소중이라면
+        if not profile.email_subscribe:
+            return Response({"message": "Already Unsubscribing."}, status=status.HTTP_400_BAD_REQUEST)
+
+        profile.email_subscribe = False
+        profile.save()
+
+        return Response({"message": "ok."}, status=status.HTTP_200_OK)
