@@ -2,6 +2,8 @@ from django.shortcuts import render
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+
+from config.utils import check_email_subscription
 from .tasks import application_approval_email, application_refusal_email
 # 뷰를 어떻게 작성할지는 url 설계 생각하면서도 바뀔 수 있구나
 
@@ -27,6 +29,7 @@ class TeamApplicationViewSet(viewsets.GenericViewSet):
 
     # 승인/거절 api  # 팀 리더
     ''' 팀 리더가 신청 승인 :: GET http://127.0.0.1:8000/applications/{application_pk}/approve/ '''
+
     @action(methods=['get'], detail=True, url_path='approve',
             url_name='approve_application')
     def approve_application(self, request, *args, **kwargs):
@@ -47,12 +50,15 @@ class TeamApplicationViewSet(viewsets.GenericViewSet):
             # serializer = self.get_serializer(application)
             # print(serializer.data)
 
-            application_approval_email.delay(application.applicant.email)  # 회원에게 신청 승인 메일
+            does_subscribe_to_email, email = check_email_subscription(application.applicant)
+            if does_subscribe_to_email:
+                application_approval_email.delay(email)  # 회원에게 신청 승인 메일
 
             return Response({"message": "ok"}, status=status.HTTP_200_OK)
         return Response({"message": "Application Status Error."}, status=status.HTTP_400_BAD_REQUEST)
 
     ''' 팀리더가 신청 거부 :: GET http://127.0.0.1:8000/applications/{application_pk}/refuse/ '''
+
     @action(methods=['get'], detail=True, url_path='refuse',
             url_name='refuse_application')
     def refuse_application(self, request, *args, **kwargs):
@@ -65,7 +71,9 @@ class TeamApplicationViewSet(viewsets.GenericViewSet):
             # serializer = self.get_serializer(application)
             # print(serializer.data)
 
-            application_refusal_email.delay(application.applicant.email)  # 회원에게 신청 거부 메일
+            does_subscribe_to_email, email = check_email_subscription(application.applicant)
+            if does_subscribe_to_email:
+                application_refusal_email.delay(email)  # 회원에게 신청 거부 메일
 
             return Response({"message": "ok"}, status=status.HTTP_200_OK)
         return Response({"message": "Application Status Error."}, status=status.HTTP_400_BAD_REQUEST)

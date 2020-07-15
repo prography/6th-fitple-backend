@@ -12,6 +12,7 @@ from applications.models import TeamApplication, JoinQuestion, JoinAnswer
 from applications.permissions import IsTeamLeader, IsOwner
 from applications.serializers import TeamApplicationSerializer, JoinQuestionSerializer, JoinAnswerSerializer, \
     TeamApplicationListSerializer
+from config.utils import check_email_subscription
 from .serializers import TeamSerializer, TeamListSerializer, CommentSerializer, TeamOnlyCommentSerializer, \
     ImageSerializer
 from .models import Team, Comment, Image
@@ -83,7 +84,9 @@ class TeamViewSet(viewsets.ModelViewSet):
             # self.perform_create(serializer)
             headers = self.get_success_headers(team_serializer.data)
 
-            team_creation_email.delay(request.user.email)  # 팀 생성 메일
+            does_subscribe_to_email, email = check_email_subscription(request.user)
+            if does_subscribe_to_email:
+                team_creation_email.delay(email)  # 팀 생성 메일
 
             return Response({
                 "board": board_data,
@@ -218,8 +221,13 @@ class TeamViewSet(viewsets.ModelViewSet):
             }
             headers = self.get_success_headers(application_serializer.data)
 
-            application_confirmation_email.delay(request.user.email)  # 신청 확인 메일 - 회원
-            application_notification_email.delay(team.author.email)  # 팀장
+            does_subscribe_to_email, email = check_email_subscription(request.user)
+            if does_subscribe_to_email:
+                application_confirmation_email.delay(email)  # 신청 확인 메일 - 회원
+
+            does_subscribe_to_email, email = check_email_subscription(team.author)
+            if does_subscribe_to_email:
+                application_notification_email.delay(email)  # 팀장
 
             return Response(response, status=status.HTTP_201_CREATED, headers=headers)
 
@@ -390,7 +398,9 @@ class TeamViewSet(viewsets.ModelViewSet):
         except:
             return Response({"message": "Not Found."}, status=status.HTTP_404_NOT_FOUND)
 
-        cancellation_of_application_email.delay(request.user.email)  # 신청 취소 확인 메일
+        does_subscribe_to_email, email = check_email_subscription(request.user)
+        if does_subscribe_to_email:
+            cancellation_of_application_email.delay(email)  # 신청 취소 확인 메일
 
         return Response({"message": "ok"}, status=status.HTTP_200_OK)
 
@@ -475,14 +485,29 @@ class CommentViewSet(viewsets.ModelViewSet):
 
         if not team_leader_is_comment_owner:  # 댓글 알림 조건 : 팀장이 댓글 달면 팀장에게 알림 안간다
             if is_child_comment:  # 대댓이면
-                new_comment_notifications_email.delay(comment.team.author.email, comment.team.id)
+
+                does_subscribe_to_email, email = check_email_subscription(comment.team.author)
+                if does_subscribe_to_email:
+                    new_comment_notifications_email.delay(email, comment.team.id)
+
                 # 대댓이지만ok 댓글 주인이랑 대댓 주인이랑 같으면 대댓 알림 없다
                 if comment.parent.user != comment.user:
-                    new_child_comment_notifications_email.delay(comment.parent.user.email, comment.team.id)
-            else:  # 루트댓글이면
-                new_comment_notifications_email.delay(comment.team.author.email, comment.team.id)
+
+                    does_subscribe_to_email, email = check_email_subscription(comment.parent.user)
+                    if does_subscribe_to_email:
+                        new_child_comment_notifications_email.delay(email, comment.team.id)
+
+            else:  # 루트댓글이면 
+                print('??')
+                does_subscribe_to_email, email = check_email_subscription(comment.team.author)
+                print(does_subscribe_to_email)
+                if does_subscribe_to_email:
+                    new_comment_notifications_email.delay(email, comment.team.id)
+
         elif is_child_comment:  # 팀장인데 대댓이야
-            new_child_comment_notifications_email.delay(comment.parent.user.email, comment.team.id)
+            does_subscribe_to_email, email = check_email_subscription(comment.parent.user)
+            if does_subscribe_to_email:
+                new_child_comment_notifications_email.delay(email, comment.team.id)
 
         # # if not is_child_comment:
         # #     new_comment_notifications_email.delay(comment.team.author.email, comment.team.id)
