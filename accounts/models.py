@@ -119,3 +119,4 @@ class Profile(models.Model):
                              storage=PublicMediaStorage(),
                              default='default_user.png')
     email_subscribe = models.BooleanField(default=True)
+

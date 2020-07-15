@@ -9,6 +9,7 @@
 - [프로필 read(인증 불필요)](####프로필 read(인증 불필요))
 - [프로필 application list](####프로필 application list)
 - [프로필 myTeam list](####프로필 myTeam list)
+- [이메일 구독/구독취소 API](####이메일 구독/구독취소 API)
 
 
 
@@ -112,7 +113,6 @@
 }
     // 다음 순서는 로그인
     ```
-  ```
     
   - 없는 email 이면
   
@@ -122,7 +122,11 @@
     	"email": email
     }
     // 다음 순서는 회원가입
-  ```
+    ```
+
+
+
+
 
 
 
@@ -138,11 +142,13 @@
     {
         "success": "True",
         "profile": {
-            "username": "lemontech",
+            "username": "김시현",
             "livingArea": null,
             "phone": null,
-            "email": "lemontech119@gmail.com",
-            "image": "https://fitple-access-s3-test.s3-ap-northeast-2.amazonaws.com/media/public/default_user.png"
+            "email": "dqgsh1055@gmail.com",
+            "introduce": null,
+            "image": "https://fitple-access-s3-test.s3-ap-northeast-2.amazonaws.com/media/default_user.png",
+            "email_subscribe": true
         }
     }
     ```
@@ -157,7 +163,7 @@
     phone
     email
     ```
-  ```
+
   
   - ###### response
   
@@ -165,7 +171,8 @@
   
   - ```json
     {"message": "Request Body Error."}
-  ```
+    ```
+
   
   - 성공하면
   
@@ -236,16 +243,57 @@
 
   ``` json
   {
-      "id": 13,
+      "id": 10,
       "user_id": 13,
       "livingArea": null,
       "phone": null,
-      "image": "https://fitple-access-s3-test.s3-ap-northeast-2.amazonaws.com/media/default_user.png",
-      "username": "ado119"
+      "introduce": null,
+      "image": "https://fitple-access-s3-test.s3-ap-northeast-2.amazonaws.com/media/public/default_user.png",
+      "email_subscribe": true,
+      "email": "test123@test.com",
+    "username": "test"
   }
   ```
-
+  
   
 
+---
 
+#### 이메일 구독/구독취소 API
 
+- ##### url : GET
+
+  - BASE_URL +  /account/profile/email/subscribe
+  - BASE_URL +  /account/profile/email/unsubscribe
+
+- header - token 필요
+
+- ##### response
+
+  - 이미 구독중이라면 (구독중인데 구독중 api 요청했을 경우)
+
+    - ```python
+      {"message": "Already Subscribed."}
+      ```
+
+  - 이미 구독취소중이라면 (취소상태인데 취소상태 요청했을 경우)
+
+    - ```python
+      {"message": "Already Unsubscribing."}
+      ```
+
+  - 요청한 사용자의 profile 을 찾지 못했을 경우
+
+    - ```python
+      {"message": "Not Found."}
+      ```
+
+  - 성공적으로 수행되면
+
+    - ```python
+      {"message": "ok."}
+      ```
+
+> 기존 profile read API 를 통해 READ 할 수 있으며
+>
+> 수정은 이 별도 api 를 통해 수행해야 함..

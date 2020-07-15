@@ -1,4 +1,5 @@
 from django.core.mail.message import EmailMessage, EmailMultiAlternatives
+
 from rest_framework import settings
 
 from config.settings import development
@@ -8,6 +9,7 @@ FROM_EMAIL = development.EMAIL_HOST_USER
 
 def send_test_email():
     subject = "이메일 테스트2"
+
     # to = ['lemontech119@gmail.com']
     to = ['dqgsh1055@gmail.com']
     # from_email = 'fitple.dev@gmail.com'
@@ -253,3 +255,4 @@ def send_application_refusal_notification_email_to_member(email):
     msg = EmailMultiAlternatives(subject=subject, body="text_content", from_email=FROM_EMAIL, to=to)
     msg.attach_alternative(message, "text/html")
     msg.send()
+
