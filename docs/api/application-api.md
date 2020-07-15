@@ -317,7 +317,7 @@ Base_Url: http://fitple-deploy-dev.ap-northeast-2.elasticbeanstalk.com/
 
   - ###### DELETE
 
-  - http://127.0.0.1:8000/teams/board/{team_pk}/applications/{application_pk}
+  - http://127.0.0.1:8000/teams/board/{team_pk}/applications/cancel/
 
   - ##### 설명
 
@@ -351,7 +351,7 @@ Base_Url: http://fitple-deploy-dev.ap-northeast-2.elasticbeanstalk.com/
 
     
 
-## ap신청 승인 api
+## 신청 승인 api
 
 - ##### url
 
@@ -422,7 +422,7 @@ Base_Url: http://fitple-deploy-dev.ap-northeast-2.elasticbeanstalk.com/
 
     
 
-#### 질문 list
+## 질문 list
 
 - url
 

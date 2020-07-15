@@ -8,7 +8,7 @@ from .models import User, Profile
 from teams.models import Team
 from applications.models import TeamApplication
 ## 테스트
-from .task import def_email
+from .task import def_email, def_welcome_email
 
 # 시간이 없어서 임시로 작업
 from config.settings.production import MEDIA_URL
@@ -28,8 +28,11 @@ def createUser(request):  # 회원가입 ?
         # 비밀번호 1차 + 2차 같은지도 확인하기! -- 프론트에서도 할 수 있는 일인듯! 일단 코드만 작성해둘건데 구분 어떻게 하는지 물어보기!
         result_passwd_check = True  # serializer.validated_data['password'] == password_check  #
         if User.objects.filter(email=serializer.validated_data['email']).first() is None and result_passwd_check:  #
-            serializer.save()  # 추가로 멤버 주입할 수 있었던듯
+            user = serializer.save()  # 추가로 멤버 주입할 수 있었던듯
             # existing instance 제공하면 update 실행된다
+
+            def_welcome_email.delay(user.email)  # 가입 인사 메일
+
             return Response({"message": "ok"}, status=status.HTTP_201_CREATED)
         return Response({"message": "duplicate email"}, status=status.HTTP_409_CONFLICT)
 
@@ -83,7 +86,7 @@ def getProfile(request, pk, format=None):
         profile = Profile.objects.filter(user=pk).values()[0]
         username = User.objects.filter(id=pk).values()[0]
         profile["username"] = username["username"]
-        profile["image"] = MEDIA_URL+profile["image"]
+        profile["image"] = MEDIA_URL + profile["image"]
 
         return Response(profile)
 
@@ -175,8 +178,8 @@ class ProfileView(RetrieveUpdateAPIView):
         }
         return Response(response, status=status.HTTP_200_OK)
 
-
     ''' 프로필 update :: PUT http://127.0.0.1:8000/account/profile/{profile_pk}/ '''
+
     def update(self, request, *args, **kwargs):
         # user = request.user  # User.objects.filter(email=request.data['email']).first()
         serializer = self.get_serializer(instance=request.user, data=request.data)

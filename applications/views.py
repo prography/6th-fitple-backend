@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-
+from .tasks import application_approval_email, application_refusal_email
 # 뷰를 어떻게 작성할지는 url 설계 생각하면서도 바뀔 수 있구나
 
 # 지원자가
@@ -46,6 +46,9 @@ class TeamApplicationViewSet(viewsets.GenericViewSet):
             # print(application)
             # serializer = self.get_serializer(application)
             # print(serializer.data)
+
+            application_approval_email.delay(application.applicant.email)  # 회원에게 신청 승인 메일
+
             return Response({"message": "ok"}, status=status.HTTP_200_OK)
         return Response({"message": "Application Status Error."}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -61,9 +64,11 @@ class TeamApplicationViewSet(viewsets.GenericViewSet):
 
             # serializer = self.get_serializer(application)
             # print(serializer.data)
+
+            application_refusal_email.delay(application.applicant.email)  # 회원에게 신청 거부 메일
+
             return Response({"message": "ok"}, status=status.HTTP_200_OK)
         return Response({"message": "Application Status Error."}, status=status.HTTP_400_BAD_REQUEST)
-
 
 # @api_view(['GET'])
 # @permission_classes([IsAuthenticated])

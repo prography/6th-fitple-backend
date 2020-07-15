@@ -16,7 +16,8 @@ from .serializers import TeamSerializer, TeamListSerializer, CommentSerializer, 
     ImageSerializer
 from .models import Team, Comment, Image
 from accounts.models import User, Profile
-from .task import def_email
+from .task import team_creation_email, application_confirmation_email, application_notification_email, \
+    cancellation_of_application_email, new_comment_notifications_email, new_child_comment_notifications_email
 # 시간이 없어서 임시로 작업
 from config.settings.production import MEDIA_URL
 
@@ -81,6 +82,9 @@ class TeamViewSet(viewsets.ModelViewSet):
 
             # self.perform_create(serializer)
             headers = self.get_success_headers(team_serializer.data)
+
+            team_creation_email.delay(request.user.email)  # 팀 생성 메일
+
             return Response({
                 "board": board_data,
                 "author": team_serializer.data['author'],
@@ -206,13 +210,17 @@ class TeamViewSet(viewsets.ModelViewSet):
             team_data = Team.objects.filter(id=kwargs['pk']).values()
             user_data = User.objects.filter(id=team_data[0]['author_id']).values()
             email = user_data[0]['email']
-            def_email.delay(email)
+            # def_email.delay(email)
             # User.objects.filter
             response = {
                 # "message": f"'{self.request.user.username}' applies to Team: '{team.title}'"
                 "message": "ok",
             }
             headers = self.get_success_headers(application_serializer.data)
+
+            application_confirmation_email.delay(request.user.email)  # 신청 확인 메일 - 회원
+            application_notification_email.delay(team.author.email)  # 팀장
+
             return Response(response, status=status.HTTP_201_CREATED, headers=headers)
 
         elif request.method == 'GET':
@@ -382,6 +390,8 @@ class TeamViewSet(viewsets.ModelViewSet):
         except:
             return Response({"message": "Not Found."}, status=status.HTTP_404_NOT_FOUND)
 
+        cancellation_of_application_email.delay(request.user.email)  # 신청 취소 확인 메일
+
         return Response({"message": "ok"}, status=status.HTTP_200_OK)
 
     ''' 팀의 질문 list 요청하는 api :: GET http://127.0.0.1:8000/teams/board/{team_pk}/questions/ '''
@@ -452,17 +462,52 @@ class CommentViewSet(viewsets.ModelViewSet):
         try:
             serializer = self.get_serializer(data=request.data)
             serializer.is_valid(raise_exception=True)
-            self.perform_create(serializer)
+            comment = self.perform_create(serializer)
             headers = self.get_success_headers(serializer.data)
-            return Response({
-                "team_id": serializer.data["team"],
-                "message": "ok"
-            }, status=status.HTTP_201_CREATED, headers=headers)
         except:
             return Response({"message": "Request Body Error."}, status=status.HTTP_409_CONFLICT)
 
+        # 대댓글 알림 보내고 싶은데! try로직 수정 > 메일 발송 로직 추가!
+        is_child_comment = ('parent' in request.data)
+        print('is_child_comment', is_child_comment)
+        team_leader_is_comment_owner = (comment.user == comment.team.author)  # 동일하면 True
+        print('team_leader_is_comment_owner', team_leader_is_comment_owner)
+
+        if not team_leader_is_comment_owner:  # 댓글 알림 조건 : 팀장이 댓글 달면 팀장에게 알림 안간다
+            if is_child_comment:  # 대댓이면
+                new_comment_notifications_email.delay(comment.team.author.email, comment.team.id)
+                # 대댓이지만ok 댓글 주인이랑 대댓 주인이랑 같으면 대댓 알림 없다
+                if comment.parent.user != comment.user:
+                    new_child_comment_notifications_email.delay(comment.parent.user.email, comment.team.id)
+            else:  # 루트댓글이면
+                new_comment_notifications_email.delay(comment.team.author.email, comment.team.id)
+        elif is_child_comment:  # 팀장인데 대댓이야
+            new_child_comment_notifications_email.delay(comment.parent.user.email, comment.team.id)
+
+        # # if not is_child_comment:
+        # #     new_comment_notifications_email.delay(comment.team.author.email, comment.team.id)
+        #
+        # # 대댓의 경우 (댓글 작성자 != 팀장) 경우에만 댓글 알림 보내고 싶어!
+        # if is_child_comment and not team_leader_is_comment_owner:
+        #     # 댓글 알림 - 팀장
+        #     print('대댓 : 팀장은 아님')
+        #
+        #
+        # if is_child_comment:
+        #     # 대댓글 알림 - 댓글 주인
+        #     print('댓글 주인에 대댓 알림')
+        #     new_child_comment_notifications_email.delay(comment.parent.user.email, comment.team.id)
+        # elif not is_child_comment and not team_leader_is_comment_owner:  # 루트 댓글의 경우에는 팀장에게 알림 보낸다
+        #     print('팀장에 댓글 알림')
+        #     new_comment_notifications_email.delay(comment.team.author.email, comment.team.id)
+
+        return Response({
+            "team_id": serializer.data["team"],
+            "message": "ok"
+        }, status=status.HTTP_201_CREATED, headers=headers)
+
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        return serializer.save(user=self.request.user)
 
 
 class CommentOnlyViewSet(viewsets.ReadOnlyModelViewSet):
