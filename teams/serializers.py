@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from accounts.serializers import UserSimpleSerializerVerTwo
+from applications.models import TeamApplication
 from .models import Team, Comment, Image
 
 
@@ -30,8 +31,9 @@ class TeamListSerializer(serializers.ModelSerializer):
 
 class TeamSerializer(serializers.ModelSerializer):
     author = serializers.SerializerMethodField()
-    #author = serializers.CharField(read_only=True)  # read_only=True
+    # author = serializers.CharField(read_only=True)  # read_only=True
     image = serializers.FileField(required=False)
+
     # question = JoinQuestionsSerializer(write_only=True) # 팀 생성할 때만
 
     class Meta:
@@ -50,7 +52,8 @@ class TeamSerializer(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
     reply = serializers.SerializerMethodField()
     user = UserSimpleSerializerVerTwo(read_only=True)
-        # serializers.CharField(read_only=True)
+
+    # serializers.CharField(read_only=True)
 
     class Meta:
         model = Comment
@@ -74,3 +77,41 @@ class TeamOnlyCommentSerializer(serializers.ModelSerializer):
         parent_comments = obj.comments.filter(parent=None)
         serializer = CommentSerializer(parent_comments, many=True)
         return serializer.data
+
+
+class TeamMemberSimpleSerializer(serializers.ModelSerializer):
+    team_id = serializers.SerializerMethodField()
+    team_title = serializers.SerializerMethodField()
+    role = serializers.SerializerMethodField()
+
+    class Meta:
+        model = TeamApplication
+        fields = ['team_id', 'team_title', 'role']
+
+    def get_team_id(self, obj):  # TeamApplication
+        return obj.team.id
+
+    def get_team_title(self, obj):  # TeamApplication
+        return obj.team.title
+
+    def get_role(self, obj):
+        return "팀원"
+
+
+class TeamLeaderSimpleSerializer(serializers.ModelSerializer):
+    team_id = serializers.SerializerMethodField()
+    team_title = serializers.SerializerMethodField()
+    role = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Team
+        fields = ['team_id', 'team_title', 'role']
+
+    def get_team_id(self, obj):  # TeamApplication
+        return obj.id
+
+    def get_team_title(self, obj):  # TeamApplication
+        return obj.title
+
+    def get_role(self, obj):
+        return "팀장"

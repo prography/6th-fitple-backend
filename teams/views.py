@@ -201,7 +201,7 @@ class TeamViewSet(viewsets.ModelViewSet):
                 try:
                     question = JoinQuestion.objects.get(pk=qna['question'])
                 except:
-                    return Response({"message": "Not found Team."}, status=status.HTTP_404_NOT_FOUND)
+                    return Response({"message": "Not found Questions."}, status=status.HTTP_404_NOT_FOUND)
 
                 # dobby_change
                 ##answer_serializer = JoinAnswerSerializer(data={'answer': qna['answer']})
