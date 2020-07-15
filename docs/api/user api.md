@@ -263,8 +263,8 @@
 
 - ##### url : GET
 
-  - BASE_URL +  /account/profile/email/subscribe
-  - BASE_URL +  /account/profile/email/unsubscribe
+  - BASE_URL +  /account/profile/email/subscribe/
+  - BASE_URL +  /account/profile/email/unsubscribe/
 
 - header - token 필요
 
