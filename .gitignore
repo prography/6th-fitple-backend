@@ -42,6 +42,7 @@ schema/
 
 django_py38
 django_py36
+awesome_venv
 
 ## env
 env/etc
