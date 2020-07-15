@@ -66,6 +66,7 @@ class ProfilePageSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
     introduce = serializers.CharField(required=True)
     image = serializers.FileField(allow_empty_file=True, required=False)
+    email_subscribe = serializers.BooleanField(read_only=True)
 
     # 인스턴스에 대한 검증없이 생성자에서 바로 가져오는건가 ? ok
     # update 에 self.instance 그대로 전달하고 create 결과값으로 변경된다 !
