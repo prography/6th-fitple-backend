@@ -84,6 +84,7 @@ def getProfile(request, pk, format=None):
     if request.method == "GET":
         profile = Profile.objects.filter(user=pk).values()[0]
         username = User.objects.filter(id=pk).values()[0]
+        profile["email"] = username["email"]
         profile["username"] = username["username"]
         profile["image"] = MEDIA_URL + profile["image"]
 
