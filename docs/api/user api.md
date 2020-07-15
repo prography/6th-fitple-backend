@@ -243,15 +243,18 @@
 
   ``` json
   {
-      "id": 13,
+      "id": 10,
       "user_id": 13,
       "livingArea": null,
       "phone": null,
-      "image": "https://fitple-access-s3-test.s3-ap-northeast-2.amazonaws.com/media/default_user.png",
-      "username": "ado119"
+      "introduce": null,
+      "image": "https://fitple-access-s3-test.s3-ap-northeast-2.amazonaws.com/media/public/default_user.png",
+      "email_subscribe": true,
+      "email": "test123@test.com",
+    "username": "test"
   }
   ```
-
+  
   
 
 ---
