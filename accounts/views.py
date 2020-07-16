@@ -5,6 +5,7 @@ from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.viewsets import GenericViewSet
 
+from teams.serializers import TeamMemberSimpleSerializer, TeamLeaderSimpleSerializer
 from .serializers import UserCreateSerializer, UserLoginSerializer, ProfilePageSerializer
 from .models import User, Profile
 from teams.models import Team
@@ -85,12 +86,47 @@ def userCheck(request):
 @permission_classes([AllowAny])
 def getProfile(request, pk, format=None):
     if request.method == "GET":
-        profile = Profile.objects.filter(user=pk).values()[0]
-        username = User.objects.filter(id=pk).values()[0]
+        try:
+            profile = Profile.objects.filter(user=pk).values()[0]
+            username = User.objects.filter(id=pk).values()[0]
+        except:
+            return Response({"message": "Not Found."}, status=status.HTTP_404_NOT_FOUND)
+
         profile["email"] = username["email"]
         profile["username"] = username["username"]
         profile["image"] = MEDIA_URL + profile["image"]
 
+        try:
+            user = User.objects.get(pk=pk)
+        except:
+            return Response({"message": "Not found User."}, status=status.HTTP_404_NOT_FOUND)
+
+        # 사용자 히스토리 데이터 추가
+        # 팀원 히스토리
+        member_doing_activity = user.applications.filter(
+            team__active_status=Team.IN_ACTIVITY
+        )
+        member_doing_team_serializer = TeamMemberSimpleSerializer(instance=member_doing_activity, many=True)
+
+        member_done_activity = user.applications.filter(
+            team__active_status=Team.END_OF_ACTIVITY
+        )
+        member_done_team_serializer = TeamMemberSimpleSerializer(instance=member_done_activity, many=True)
+
+        # 팀장 히스토리
+        leader_doing_activity = user.teams.filter(
+            active_status=Team.IN_ACTIVITY
+        )
+        leader_doing_team_serializer = TeamLeaderSimpleSerializer(instance=leader_doing_activity, many=True)
+
+        leader_done_activity = user.teams.filter(
+            active_status=Team.END_OF_ACTIVITY
+        )
+        leader_done_team_serializer = TeamLeaderSimpleSerializer(instance=leader_done_activity, many=True)
+
+        profile['history'] = {}
+        profile['history']['doing'] = member_doing_team_serializer.data + leader_doing_team_serializer.data
+        profile['history']['done'] = member_done_team_serializer.data + leader_done_team_serializer.data
         return Response(profile)
 
 
@@ -169,6 +205,29 @@ class ProfileView(RetrieveUpdateAPIView):
         user = request.user
         profile = Profile.objects.get(user=user)
 
+        # 사용자 히스토리 데이터 추가
+        # 팀원 히스토리
+        member_doing_activity = user.applications.filter(
+            team__active_status=Team.IN_ACTIVITY
+        )
+        member_doing_team_serializer = TeamMemberSimpleSerializer(instance=member_doing_activity, many=True)
+
+        member_done_activity = user.applications.filter(
+            team__active_status=Team.END_OF_ACTIVITY
+        )
+        member_done_team_serializer = TeamMemberSimpleSerializer(instance=member_done_activity, many=True)
+
+        # 팀장 히스토리
+        leader_doing_activity = user.teams.filter(
+            active_status=Team.IN_ACTIVITY
+        )
+        leader_doing_team_serializer = TeamLeaderSimpleSerializer(instance=leader_doing_activity, many=True)
+
+        leader_done_activity = user.teams.filter(
+            active_status=Team.END_OF_ACTIVITY
+        )
+        leader_done_team_serializer = TeamLeaderSimpleSerializer(instance=leader_done_activity, many=True)
+
         response = {
             'success': 'True',
             'profile': {
@@ -179,8 +238,13 @@ class ProfileView(RetrieveUpdateAPIView):
                 'introduce': profile.introduce,
                 'image': profile.image.url,
                 'email_subscribe': profile.email_subscribe
+            },
+            "history": {
+                "doing": member_doing_team_serializer.data + leader_doing_team_serializer.data,
+                "done": member_done_team_serializer.data + leader_done_team_serializer.data
             }
         }
+        print('response', response)
         return Response(response, status=status.HTTP_200_OK)
 
     ''' 프로필 update :: PUT http://127.0.0.1:8000/account/profile/{profile_pk}/ '''

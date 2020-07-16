@@ -73,6 +73,11 @@ def send_test_email():
 # 8. 새 대댓글 알림-댓글주인 : new_child_comment_notifications_email_to_member
 # 9. 신청 거절 알림-회원 : application_refusal_notification_email_to_member
 
+# 10. 공지사항 : 팀장 > 팀원 : notice_email_from_team_leader_to_team_member
+# 11. 공지사항 : 팀장 확인 : notice_confirmation_email_to_team_leader
+# 12. 활동 종료 후, 팀원 전체 확인 : end_of_activity_confirmation_email_to_all_team_member
+# 13. 모집 마감 후, 팀원 전체 확인 메일 : recruitment_deadline_confirmation_email_to_all_team_member
+
 ##
 # ok 1. 가입 환영 : send_welcome_to_member
 def send_welcome_to_member(email):
@@ -256,3 +261,69 @@ def send_application_refusal_notification_email_to_member(email):
     msg.attach_alternative(message, "text/html")
     msg.send()
 
+
+# 10. 공지사항 : 팀장 > 팀원 : notice_email_from_team_leader_to_team_member
+def send_notice_email_from_team_leader_to_team_member(email_list, team_title, notice_message):
+    # to = ['dqgsh1055@gmail.com']
+    to = email_list  # [email]
+
+    subject = "(Fit-ple) 팀의 전체 전달사항이 있습니다!"
+    # <p></p> <br>
+    message = f"<html><body> <p>[{team_title} 공지]</p>"
+    message += f"<p>{notice_message}</p> </body></html>" + COMMON_MESSAGES
+
+    msg = EmailMultiAlternatives(subject=subject, body="text_content", from_email=FROM_EMAIL, to=to)
+    msg.attach_alternative(message, "text/html")
+    msg.send()
+
+
+# 11. 공지사항 : 팀장 확인 : send_notice_confirmation_email_to_team_leader
+def send_notice_confirmation_email_to_team_leader(email):
+    to = [email]
+
+    subject = "(Fit-ple) 전달사항이 성공적으로 전달되었습니다!"
+    # <p></p> <br>
+    message = '''<html><body>
+          <p>활동은 잘 진행되고 있나요? <br>
+            Fit이 맞는 팀원들과 멋진 서비스를 완성해보세요! <br>
+            Fitple은 항상 여러분을 응원합니다!</p>
+          </body></html>
+          ''' + COMMON_MESSAGES
+
+    msg = EmailMultiAlternatives(subject=subject, body="text_content", from_email=FROM_EMAIL, to=to)
+    msg.attach_alternative(message, "text/html")
+    msg.send()
+
+
+# 12. 활동 종료 후, 팀원 전체 확인 : send_end_of_activity_confirmation_email_to_all_team_member
+def send_end_of_activity_confirmation_email_to_all_team_member(email_list, team_title):
+    to = email_list
+
+    subject = "(Fit-ple) 팀 활동이 종료되었습니다!"
+    # <p></p> <br>
+    message = f'''<html><body> <p>'<strong>{team_title}</strong>' 의 팀원 여러분, <br>
+        고생하셨습니다!!! <br>
+        더 많은 팀에 참여하여 프로젝트 이력을 쌓아보세요!</p>
+          </body></html>
+          ''' + COMMON_MESSAGES
+
+    msg = EmailMultiAlternatives(subject=subject, body="text_content", from_email=FROM_EMAIL, to=to)
+    msg.attach_alternative(message, "text/html")
+    msg.send()
+
+
+# 13. 모집 마감 후, 팀원 전체 확인 메일 : send_recruitment_deadline_confirmation_email_to_all_team_member
+def send_recruitment_deadline_confirmation_email_to_all_team_member(email_list, team_title):
+    to = email_list
+
+    subject = "(Fit-ple) 팀 모집이 마감되었습니다!"
+    # <p></p> <br>
+    message = f'''<html><body> <p>Fitple은, <br>
+        Fit이 맞는 '<strong>{team_title}</strong>' 팀원 여러분의 열정적인 활동을 응원합니다! <br>
+        꾸준히 참여하여 멋진 서비스를 완성해보세요!</p>
+          </body></html>
+          ''' + COMMON_MESSAGES
+
+    msg = EmailMultiAlternatives(subject=subject, body="text_content", from_email=FROM_EMAIL, to=to)
+    msg.attach_alternative(message, "text/html")
+    msg.send()

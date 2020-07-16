@@ -21,8 +21,8 @@ class TeamApplication(models.Model):
         (WAITING, 'Waiting'),
     ]
     # team  applicant  join_status  job  created_at
-    team = models.ForeignKey(Team, on_delete=models.CASCADE)  #
-    applicant = models.ForeignKey(User, on_delete=models.CASCADE)  #
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='applications')  #
+    applicant = models.ForeignKey(User, on_delete=models.CASCADE, related_name='applications')  #
 
     join_status = models.CharField(
         max_length=10,

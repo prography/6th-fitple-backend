@@ -3,7 +3,7 @@ import json
 from rest_framework import viewsets
 from rest_framework import status
 from rest_framework import permissions
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 
@@ -18,7 +18,8 @@ from .serializers import TeamSerializer, TeamListSerializer, CommentSerializer, 
 from .models import Team, Comment, Image
 from accounts.models import User, Profile
 from .task import team_creation_email, application_confirmation_email, application_notification_email, \
-    cancellation_of_application_email, new_comment_notifications_email, new_child_comment_notifications_email
+    cancellation_of_application_email, new_comment_notifications_email, new_child_comment_notifications_email, \
+    recruitment_deadline_confirmation_email, end_of_activity_confirmation_email, notice_email
 # 시간이 없어서 임시로 작업
 from config.settings.production import MEDIA_URL
 
@@ -200,7 +201,7 @@ class TeamViewSet(viewsets.ModelViewSet):
                 try:
                     question = JoinQuestion.objects.get(pk=qna['question'])
                 except:
-                    return Response({"message": "Not found Team."}, status=status.HTTP_404_NOT_FOUND)
+                    return Response({"message": "Not found Questions."}, status=status.HTTP_404_NOT_FOUND)
 
                 # dobby_change
                 ##answer_serializer = JoinAnswerSerializer(data={'answer': qna['answer']})
@@ -428,7 +429,7 @@ class TeamViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     # in-activity end-of-activity
-    @action(methods=['get'], detail=True,
+    @action(methods=['get'], detail=True,  # 모집 마감 api
             url_path='status/in-activity', url_name='join-status-in-activity')  # IsTeamLeader
     def change_status_in_activity(self, request, *args, **kwargs):
         team = self.get_object()
@@ -443,6 +444,23 @@ class TeamViewSet(viewsets.ModelViewSet):
         team.active_status = Team.IN_ACTIVITY
         team.save()
         # serializer = TeamSerializer(instance=team)
+
+        # 모집 마감 메일 발송
+        email_list = [team.author.email]
+        application_list = team.applications.filter(
+            join_status=TeamApplication.APPROVED
+        )
+
+        for application in application_list:
+            # 이메일 구독 확인
+            print('application_email', application.applicant.email)
+            does_subscribe_to_email, email = check_email_subscription(application.applicant)
+            if does_subscribe_to_email:
+                email_list.append(application.applicant.email)
+
+        print('all_team_member_email', type(email_list), email_list)
+        recruitment_deadline_confirmation_email.delay(email_list, team.title)
+
         return Response({'message': 'ok'}, status=status.HTTP_200_OK)
 
     @action(methods=['get'], detail=True,
@@ -460,6 +478,22 @@ class TeamViewSet(viewsets.ModelViewSet):
         team.active_status = Team.END_OF_ACTIVITY
         team.save()
         # serializer = TeamSerializer(instance=team)
+
+        # 활동 종료 메일 발송
+        email_list = [team.author.email]
+        application_list = team.applications.filter(
+            join_status=TeamApplication.APPROVED
+        )
+
+        for application in application_list:
+            # 이메일 구독 확인
+            does_subscribe_to_email, email = check_email_subscription(application.applicant)
+            if does_subscribe_to_email:
+                email_list.append(application.applicant.email)
+
+        print('all_team_member_email', email_list)
+        end_of_activity_confirmation_email.delay(email_list, team.title)
+
         return Response({'message': 'ok'}, status=status.HTTP_200_OK)
 
 
@@ -497,7 +531,7 @@ class CommentViewSet(viewsets.ModelViewSet):
                     if does_subscribe_to_email:
                         new_child_comment_notifications_email.delay(email, comment.team.id)
 
-            else:  # 루트댓글이면 
+            else:  # 루트댓글이면
                 print('??')
                 does_subscribe_to_email, email = check_email_subscription(comment.team.author)
                 print(does_subscribe_to_email)
@@ -539,3 +573,37 @@ class CommentOnlyViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Team.objects.all()
     serializer_class = TeamOnlyCommentSerializer
     permission_classes = [permissions.AllowAny]
+
+
+# 공지사항 api
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def notice_from_team_leader(request, team_pk):
+
+    try:
+        team = Team.objects.get(pk=team_pk)
+    except:
+        return Response({"message": "Not found Team."}, status=status.HTTP_404_NOT_FOUND)
+
+    # 팀 리더 퍼미션 확인
+    leader_permission = IsTeamLeader().has_object_permission(request, None, team)
+    if leader_permission is False:
+        return Response({"message": "Request Permission Error."}, status=status.HTTP_403_FORBIDDEN)
+
+    # 팀 멤버 email list 구성하기
+    email_list = []
+    application_list = team.applications.filter(
+        join_status=TeamApplication.APPROVED
+    )
+
+    for application in application_list:
+        # 이메일 구독 확인
+        does_subscribe_to_email, email = check_email_subscription(application.applicant)
+        if does_subscribe_to_email:
+            email_list.append(application.applicant.email)
+
+    notice_message = request.data['message']
+    print('team_member_email', email_list)
+    notice_email.delay(team.author.email, email_list, team.title, notice_message)
+
+    return Response({'message': 'ok'}, status=status.HTTP_200_OK)

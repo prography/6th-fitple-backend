@@ -18,6 +18,8 @@
 
 [Team Status 변경](####Team Status 변경)
 
+[Team 공지 api](####Team 공지 api)
+
 --------
 
 #### Team 생성
@@ -546,4 +548,47 @@ http://fitple-dev.ap-northeast-2.elasticbeanstalk.com/teams/comment/24/
       {'message': 'ok'}
       ```
 
-    
+
+
+
+---
+
+#### Team 공지 api
+
+- 팀장이 승인된 팀원들에게 공지사항 전달하는 api
+
+- ##### url : POST
+
+  - BASE_URL +  /teams/notice/{team_pk}/
+
+- ##### request
+
+  - token 필요
+
+  - body
+
+    - ```python
+      {
+          "message": "공지사항 내용"
+      }
+      ```
+
+- ##### response
+
+  - 해당 team 이 없는 경우
+
+  - ```python
+    {"message": "Not found Team."}
+    ```
+
+  - 팀장이 아닌 경우
+
+  - ```python
+    {"message": "Request Permission Error."}
+    ```
+
+  - 성공적으로 전달된 경우
+
+  - ```python
+    {'message': 'ok'}
+    ```
