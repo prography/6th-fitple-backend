@@ -149,6 +149,27 @@
             "introduce": null,
             "image": "https://fitple-access-s3-test.s3-ap-northeast-2.amazonaws.com/media/default_user.png",
             "email_subscribe": true
+        },
+        "history" : {
+            "done": [
+                {
+                    "team_id": 27,
+                    "team_title": "팀리더 팀생성 테스트 final",
+                    "role": "팀원"
+                },
+                {
+                    "team_id": 27,
+                    "team_title": "팀리더 팀생성 테스트 final",
+                    "role": "팀장"
+                }
+            ],
+            "doing": [
+                {
+                    "team_id": 27,
+                    "team_title": "팀리더 팀생성 테스트 final",
+                    "role": "팀장"
+                }
+            ]
         }
     }
     ```
@@ -251,7 +272,29 @@
       "image": "https://fitple-access-s3-test.s3-ap-northeast-2.amazonaws.com/media/public/default_user.png",
       "email_subscribe": true,
       "email": "test123@test.com",
-    "username": "test"
+    	"username": "test",
+      
+      "history" : {
+          "done": [
+              {
+                  "team_id": 27,
+                  "team_title": "팀리더 팀생성 테스트 final",
+                  "role": "팀원"
+              },
+              {
+                  "team_id": 27,
+                  "team_title": "팀리더 팀생성 테스트 final",
+                  "role": "팀장"
+              }
+          ],
+          "doing": [
+              {
+                  "team_id": 27,
+                  "team_title": "팀리더 팀생성 테스트 final",
+                  "role": "팀장"
+              }
+          ]
+      }
   }
   ```
   
@@ -263,8 +306,8 @@
 
 - ##### url : GET
 
-  - BASE_URL +  /account/profile/email/subscribe
-  - BASE_URL +  /account/profile/email/unsubscribe
+  - BASE_URL +  /account/profile/email/subscribe/
+  - BASE_URL +  /account/profile/email/unsubscribe/
 
 - header - token 필요
 
