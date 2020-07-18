@@ -183,17 +183,19 @@
     livingArea
     phone
     email
+    introduce
+  email_subscribe
     ```
-
+  
   
   - ###### response
   
   - request data error
   
   - ```json
-    {"message": "Request Body Error."}
+  {"message": "Request Body Error."}
     ```
-
+  
   
   - 성공하면
   

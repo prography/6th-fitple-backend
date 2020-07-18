@@ -66,7 +66,7 @@ class ProfilePageSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
     introduce = serializers.CharField(required=True)
     image = serializers.FileField(allow_empty_file=True, required=False)
-    email_subscribe = serializers.BooleanField(read_only=True)
+    email_subscribe = serializers.BooleanField(required=False)
 
     # 인스턴스에 대한 검증없이 생성자에서 바로 가져오는건가 ? ok
     # update 에 self.instance 그대로 전달하고 create 결과값으로 변경된다 !
@@ -80,6 +80,7 @@ class ProfilePageSerializer(serializers.Serializer):
         instance.profile.phone = validated_data.get('phone', instance.profile.phone)
         instance.profile.introduce = validated_data.get('introduce', instance.profile.introduce)
         instance.profile.image = validated_data.get('image', instance.profile.image)
+        instance.profile.email_subscribe = validated_data.get('email_subscribe', instance.profile.email_subscribe)
         # Profile -- livingArea, phone 변경
 
         instance.save()
