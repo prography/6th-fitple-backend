@@ -56,11 +56,13 @@ def login(request):
         # values()[0]
 
         username = query['username']
+        user_id = query['id']
         # username = 'test'
 
         response = {
             'success': 'True',
             'username': username,
+            'user_id': user_id,
             'token': serializer.data['token']
         }
         return Response(response, status=status.HTTP_200_OK)
