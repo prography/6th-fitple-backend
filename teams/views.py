@@ -86,8 +86,10 @@ class TeamViewSet(viewsets.ModelViewSet):
             headers = self.get_success_headers(team_serializer.data)
 
             does_subscribe_to_email, email = check_email_subscription(request.user)
-            if does_subscribe_to_email:
-                team_creation_email.delay(email)  # 팀 생성 메일
+
+            # 임시 보류
+            # if does_subscribe_to_email:
+                # team_creation_email.delay(email)  # 팀 생성 메일
 
             return Response({
                 "board": board_data,

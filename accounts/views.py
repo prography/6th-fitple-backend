@@ -34,7 +34,8 @@ def createUser(request):  # 회원가입 ?
             user = serializer.save()  # 추가로 멤버 주입할 수 있었던듯
             # existing instance 제공하면 update 실행된다
 
-            def_welcome_email.delay(user.email)  # 가입 인사 메일
+            # 임시로 막아놓겠습니다.
+            # def_welcome_email.delay(user.email)  # 가입 인사 메일
 
             return Response({"message": "ok"}, status=status.HTTP_201_CREATED)
         return Response({"message": "duplicate email"}, status=status.HTTP_409_CONFLICT)
@@ -56,11 +57,13 @@ def login(request):
         # values()[0]
 
         username = query['username']
+        user_id = query['id']
         # username = 'test'
 
         response = {
             'success': 'True',
             'username': username,
+            'user_id': user_id,
             'token': serializer.data['token']
         }
         return Response(response, status=status.HTTP_200_OK)
